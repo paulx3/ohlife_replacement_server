@@ -11,8 +11,6 @@
 @desc: test
 
 '''
-import os
-from server import *
 import jinja2
 
 
