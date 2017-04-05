@@ -11,3 +11,4 @@ passlib==1.7.1
 python-dateutil==2.5.3
 SQLAlchemy==1.0.13
 SQLAlchemy-Utils==0.32.14
+pytest==3.0.7
