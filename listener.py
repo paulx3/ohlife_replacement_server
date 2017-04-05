@@ -13,6 +13,7 @@ def home():
 @app.route('/listen', methods=['POST'])
 def listen():
     jsonGotten = request.get_json(force=True)
+    print(jsonGotten)
     subject = jsonGotten["headers"]["Subject"]
     entry = BeautifulSoup(jsonGotten['html'])
     entry = entry.select('div[style]')[0].text
