@@ -22,18 +22,36 @@ from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib import sqla
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import event
+from itsdangerous import TimestampSigner
+from sqlalchemy import event, create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy_utils import PasswordType
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./dbdir/ohlife.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'super secret string'
-db = SQLAlchemy(app)
+
+def create_app(database_uri, debug=False):
+    app = Flask(__name__)
+    app.debug = debug
+    # set up your database
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.secret_key = 'super secret string'
+    # add your modules
+    db.init_app(app)
+    # other setup tasks
+    return app
+
+
+# app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./dbdir/ohlife.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.secret_key = 'super secret string'
+db = SQLAlchemy()
+app = create_app("sqlite:///./dbdir/ohlife.db", True)
 admin = Admin(app, name='ohlife', template_mode='bootstrap3')
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+save_signer = TimestampSigner(app.config["SECRET_KEY"], salt="save")
+unsub_signer = TimestampSigner(app.config["SECRET_KEY"], salt="unsub")
 
 
 class User(db.Model, flask_login.UserMixin):
@@ -53,13 +71,13 @@ class User(db.Model, flask_login.UserMixin):
     posts = db.relationship('Entries', backref='posts', lazy='dynamic')
     is_admin = db.Column("is_admin", db.Boolean, default=False)
 
-    def __init__(self, user_id, username, password, email):
-        self.user_id = user_id
+    def __init__(self, username, password, email):
+        self.user_id = str(uuid.uuid1())
         self.username = username
         self.password = password
         self.email = email
         self.registered_on = datetime.utcnow()
-        self.session_id = None
+        self.session_id = str(uuid.uuid1())
         self.is_admin = False
 
     def __repr__(self) -> str:
@@ -70,7 +88,7 @@ class User(db.Model, flask_login.UserMixin):
         return True
 
     def get_id(self):
-        return self.user_id
+        return self.session_id
 
     @property
     def is_authenticated(self):
@@ -110,6 +128,9 @@ admin.add_view(OhlifeModelView(Entries, db.session))
 
 @app.before_first_request
 def initialization():
+    """
+    进行初始化
+    """
     pass
 
 
@@ -127,6 +148,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 @app.route('/login', methods=["GET", "POST"])
 def home():
+    """
+    网页登陆
+    :return: 
+    """
     if flask.request.method == 'POST':
         email = flask.request.form['email']
         password = flask.request.form['password']
@@ -134,33 +159,21 @@ def home():
         if user is not None:
             if user.password == password:
                 flask_login.login_user(user)
-                return "login ok"
+                flask.flash('Logged in successfully.')
+                return flask.redirect("/admin")
             else:
-                return "wrong password"
+                flask.flash('Wrong Password')
         else:
-            return "login error"
+            flask.flash('Wrong Password')
     else:
-        return flask.Response('''
-           <form action="" method="post">
-               <p><input type=text name=email>
-               <p><input type=password name=password>
-               <p><input type=submit value=Login>
-           </form>
-           ''')
+        return flask.render_template("login.html")
 
 
 @login_manager.user_loader
-def user_loader(user_id):
-    return User.query.get(user_id)
+def user_loader(session_id):
+    return User.query.filter_by(session_id=session_id).first()
 
 
-# @login_manager.request_loader
-# def load_user_from_header(request):
-#     api_key = request.get_json()["key"]
-#     if api_key:
-#         user = User.query.filter_by(user_id=api_key).first()
-#         if user:
-#             return user
 @app.route('/save', methods=['GET', 'POST'])
 def email_login():
     """
@@ -173,12 +186,21 @@ def email_login():
             print(json_request)
             html = json_request["html"]
             soup = BeautifulSoup(html, "lxml")
-            user_id = soup.find(id="save_key").text.strip()
-            user = User.query.get_or_404(user_id)
-            flask.session["entry"] = soup.select('div[style]')[0].text
-            flask.session["user_id"] = user_id
-            flask_login.login_user(user)
-            return flask.redirect(flask.url_for('protected_save'))
+            try:
+                save_key = soup.find(id="save_key").text.strip()
+                # 一天内session_id有效
+                session_id = save_signer.unsign(save_key, max_age=86400)
+                session_id = bytes.decode(session_id)
+                user = User.query.filter_by(session_id=session_id).first()
+                if user is not None:
+                    flask.session["entry"] = soup.select('div[style]')[0].text
+                    flask.session["user_id"] = user.user_id
+                    flask_login.login_user(user)
+                    return flask.redirect(flask.url_for('protected_save'))
+                else:
+                    flask.abort(404)
+            except:
+                flask.abort(500)
 
 
 @app.route('/protected')
@@ -194,20 +216,28 @@ def protected_save():
     print(user_id)
     entry = Entries(str(uuid.uuid1()), today, entry, user_id)
     db.session.add(entry)
-    db.session.commit()
+    # db.session.commit()
     return "Save Success"
 
 
 @app.route('/logout')
 def logout():
+    """
+    登出
+    :return: 
+    """
     flask_login.logout_user()
     return 'Logged out'
 
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
+    """
+    处理无权限访问
+    :return: 
+    """
     return 'Unauthorized'
 
 
 if __name__ == '__main__':
-    app.run('127.0.0.1', port=8080, debug=True)
+    app.run('127.0.0.1', port=8090, debug=True)

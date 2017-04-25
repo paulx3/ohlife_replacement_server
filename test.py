@@ -11,12 +11,13 @@
 @desc: test suite
 
 '''
-from flask_testing import TestCase
-from flask import Flask
-from server import db, User, create_app
-import unittest
-from elizabeth import Personal
 import random
+import unittest
+
+from elizabeth import Personal
+from flask_testing import TestCase
+
+from server import db, User, create_app
 
 
 class testCreation(TestCase):
@@ -38,19 +39,14 @@ class testUserCRUDTest(testCreation):
         return user
 
     def test_user_add(self):
-        user = self.get_user()
-        db.session.add(user)
+        self.user = self.get_user()
+        db.session.add(self.user)
         db.session.commit()
-        assert user in db.session
-
-    # def test_user_delete(self):
-    #     user = self.get_user()
-    #     db.session.add(user)
-    #     db.session.commit()
-    #     db.session.remove(user)
-    #     db.session.commit()
-    #     assert user not in db.session
-
+        assert self.user in db.session
+    def test_user_delete(self):
+        db.session.remove(self.user)
+        db.session.commit()
+        assert self.user not in db.session
 
 if __name__ == '__main__':
     unittest.main()
