@@ -9,6 +9,6 @@ install:
   - pip3 install coveralls
 # command to run tests
 script:
-  coverage run --source ohlife.py test
+  coverage run
 after_success:
   coveralls
