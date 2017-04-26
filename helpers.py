@@ -17,6 +17,8 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
+import boto3
+from helpers import get_credential
 
 import jinja2
 
@@ -56,12 +58,15 @@ def send_local_mail(mail_to, mail_from, subject, text, files, server="localhost"
     :param mail_from: 发件人
     :param subject: 主题
     :param text: 内容
-    :param files: 
+    :param files: 文件
     :param server: 邮件服务器地址
     """
     assert type(mail_to) == list
     assert type(files) == list
 
+    print(mail_to)
+    print(mail_from)
+    return
     msg = MIMEMultipart()
     msg['From'] = mail_from
     msg['To'] = COMMASPACE.join(mail_to)
@@ -84,3 +89,28 @@ def send_local_mail(mail_to, mail_from, subject, text, files, server="localhost"
     smtp = smtplib.SMTP(server)
     smtp.sendmail(mail_from, mail_to, msg.as_string())
     smtp.close()
+
+
+def get_credential():
+    """
+    从文件读取credential
+    :return: 返回credential dict
+    """
+    credential = {}
+    with open("credential", "r", encoding="utf8") as credentialFile:
+        for line in credentialFile:
+            items = line.split(":")
+            credential[items[0].strip()] = items[1].strip()
+    return credential
+
+
+def back_db():
+    """
+    备份数据库到Amazon S3
+    """
+    credential = get_credential()
+    my_session = boto3.session.Session(aws_access_key_id=credential["aws_access_key_id"],
+                                       aws_secret_access_key=credential["aws_secret_access_key"])
+    s3 = my_session.resource("s3")
+    for bucket in s3.buckets.all():
+        print(bucket.name)
