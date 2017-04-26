@@ -15,8 +15,8 @@
 import arrow
 
 from sqlalchemy.sql.expression import func
-from helpers import get_replacable, render, send_local_mail
-from server import Entries, User
+from helpers import get_replacable, render, send_local_mail, get_credential
+from server import Entries, User, create_app
 from server import save_signer
 
 # file_dir = "/home/ubuntu/ohlife-replacement/ohlife/"
@@ -28,6 +28,7 @@ def send_mail(users_text_list):
     读取用户列表，逐个发送邮件
     :param users_text_list: 
     """
+    credential = get_credential()
     today = arrow.now().format('YYYY-MM-DD')
     subject = u"今天是 %s - 你今天过得怎么样啊?" % today
     for user in users_text_list:
@@ -41,9 +42,11 @@ def send_mail(users_text_list):
             "name": user.username
         }
         html_rendered = render("sender.html", context)
-        print(html_rendered)
-        # send_local_mail(['Paul <xzycxy@126.com>'], 'OhLife<141db7d5da23b3e7909b@cloudmailin.net>', subject,
-        #                 html_rendered, [])
+        # print(html_rendered)
+        receiver = user.username + "<" + user.email + ">"
+        sender = "OhLife<" + credential["mail_server"] + ">"
+        send_local_mail([receiver], sender, subject,
+                        html_rendered, [])
 
 
 def get_entry(users):
@@ -102,6 +105,7 @@ def main():
     """
     程序入口
     """
+    create_app("sqlite:///./dbdir/ohlife.db", False).app_context().push()
     users = get_users()
     users_text_list = get_entry(users)
     send_mail(users_text_list)
