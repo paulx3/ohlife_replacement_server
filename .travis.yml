@@ -4,6 +4,11 @@ python:
   - "3.5"
   - "3.6"
 # command to install dependencies
-install: "pip3 install -r requirements.txt"
+install:
+  - pip3 install -r requirements.txt
+  - pip3 install coveralls
 # command to run tests
-script: python3 test.py
+script:
+  coverage run --source ohlife.py test
+after_success:
+  coveralls
