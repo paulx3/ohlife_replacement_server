@@ -15,7 +15,7 @@ import unittest
 
 from flask_testing import TestCase
 
-from server import db, User, create_app
+from server.server import db, User, create_app
 
 
 class testCreation(TestCase):

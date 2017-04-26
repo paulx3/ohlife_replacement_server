@@ -1,0 +1,13 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<p>请登陆后操作</p>
+<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+        onclick="window.location.href='/login'">
+登陆
+</button>
+<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+        onclick="window.location.href='/logout'">
+退出
+</button>
+{% endblock %}
