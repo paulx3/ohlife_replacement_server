@@ -106,9 +106,9 @@ class Entries(db.Model):
     text = db.Column('text', db.String(20))
     user_id = db.Column("user_id", db.String(32), db.ForeignKey("users.user_id"), nullable=False)
 
-    def __init__(self, entry_id, time, text, user_id):
-        self.entry_id = entry_id
-        self.time = time
+    def __init__(self, text, user_id):
+        self.entry_id = str(uuid.uuid1())
+        self.time = str(arrow.utcnow().format("YYYY-MM-DD"))
         self.text = text
         self.user_id = user_id
 
@@ -131,7 +131,7 @@ def initialization():
     """
     进行初始化
     """
-    pass
+    db.create_all()
 
 
 @event.listens_for(Engine, "connect")
