@@ -8,7 +8,7 @@
 
 @time: 2017/3/27 14:11
 
-@desc: Ohlife 服务端
+@desc: Ohlife Server
 
 '''
 import uuid
@@ -129,7 +129,7 @@ admin.add_view(OhlifeModelView(Entries, db.session))
 @app.before_first_request
 def initialization():
     """
-    进行初始化
+    Initialization
     """
     db.create_all()
 
@@ -137,7 +137,7 @@ def initialization():
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     """
-    用来打开对外键的支持，监听connect
+    Add support for foreign key , listening on connect event
     :param dbapi_connection: 
     :param connection_record: 
     """
@@ -149,7 +149,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 @app.route('/login', methods=["GET", "POST"])
 def home():
     """
-    网页登陆
+    web login
     :return: 
     """
     if flask.request.method == 'POST':
@@ -177,7 +177,7 @@ def user_loader(session_id):
 @app.route('/save', methods=['GET', 'POST'])
 def email_login():
     """
-    进行登陆验证
+    login check
     :return: 
     """
     if flask.request.method == 'POST':
@@ -207,7 +207,7 @@ def email_login():
 @flask_login.login_required
 def protected_save():
     """
-    验证通过后，进行存储
+    after approved , save text to entries table
     """
     today = arrow.now().format('YYYY-MM-DD HH:mm:ss')
     entry = flask.session["entry"]
@@ -223,7 +223,7 @@ def protected_save():
 @app.route('/logout')
 def logout():
     """
-    登出
+    logout
     :return: 
     """
     flask_login.logout_user()
@@ -233,7 +233,7 @@ def logout():
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     """
-    处理无权限访问
+    deal with unauthorised request
     :return: 
     """
     return 'Unauthorized'

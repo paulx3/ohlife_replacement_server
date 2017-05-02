@@ -8,7 +8,7 @@
 
 @time: 2017/4/14 18:27
 
-@desc: 工具类
+@desc: Utils
 
 '''
 import os
@@ -28,21 +28,22 @@ file_dir = ""
 
 def get_replacable(date):
     """
-    读取配置文件，在不同的日期返回不同的问候语
+    Read config file and return different greeting text according to time
     :param date: 
     :return: string
     """
+    # Todo:customize replaceable text
     config = open(file_dir + "config", "r", encoding="utf8")
     for line in config:
         temp = line.split("\t")
-        if (date == temp[0].strip()):
-            return temp[1].strip();
+        if date == temp[0].strip():
+            return temp[1].strip()
     return """今天，你的心情好吗？<br>心情不错，还是另有心事呢？"""
 
 
 def render(template_name, context):
     """
-    直接渲染本地template
+    render local template
     :param template_name: 模板名
     :param context: 环境dict
     :return: 渲染出来的html
@@ -54,13 +55,13 @@ def render(template_name, context):
 
 def send_local_mail(mail_to, mail_from, subject, text, files, server="localhost"):
     """
-    通过本地服务器发送邮件
-    :param mail_to: 收件人
-    :param mail_from: 发件人
-    :param subject: 主题
-    :param text: 内容
-    :param files: 文件
-    :param server: 邮件服务器地址
+    send email through SMTP server
+    :param mail_to: receiver
+    :param mail_from: sender
+    :param subject: subject
+    :param text: content
+    :param files: attachments
+    :param server: SMTP server addreess
     """
     assert type(mail_to) == list
     assert type(files) == list
@@ -74,8 +75,8 @@ def send_local_mail(mail_to, mail_from, subject, text, files, server="localhost"
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    # 如果 text 是html，则需要设置 _subtype='html'
-    # 默认情况下 _subtype='plain'，即纯文本
+    # if text is html ,set _subtype='html'
+    # By default, _subtype='plain'
     # msg.attach(MIMEText(text, _subtype='html', _charset='utf-8'))
     msg.attach(MIMEText(text, _subtype='html', _charset='utf-8'))
 
@@ -94,8 +95,8 @@ def send_local_mail(mail_to, mail_from, subject, text, files, server="localhost"
 
 def get_credential():
     """
-    从文件读取credential
-    :return: 返回credential dict
+    read credential from file
+    :return: return credential dict
     """
     credential = {}
     with open("credential", "r", encoding="utf8") as credentialFile:
@@ -107,7 +108,7 @@ def get_credential():
 
 def back_db():
     """
-    备份数据库到Amazon S3
+    backup database to Amazon S3
     """
     credential = get_credential()
     my_session = boto3.session.Session(aws_access_key_id=credential["aws_access_key_id"],

@@ -20,26 +20,26 @@ from server.server import db, User, create_app, Entries
 
 class testCreation(TestCase):
     """
-    测试flask创建
+    test Flask creation
     """
 
     def create_app(self):
         """
-        创建app
-        Returns: flask app对象
+        create app
+        Returns: flask app object
 
         """
         return create_app("sqlite:///", True)
 
     def setUp(self):
         """
-        创建数据库
+        create db
         """
         db.create_all()
 
     def tearDown(self):
         """
-        删除测试数据
+        delete all 
         """
         db.session.remove()
         db.drop_all()
@@ -47,8 +47,8 @@ class testCreation(TestCase):
     @staticmethod
     def get_user():
         """
-        生成用户测试数据
-        Returns: 用户对象
+        generate user object
+        Returns: user object
 
         """
         user = User("test_account", "test_password", "test@test.com")
@@ -57,7 +57,7 @@ class testCreation(TestCase):
     @staticmethod
     def get_entry_text():
         """
-        生成日志测试文本
+        generate test text
         :return: string
         """
         text = "I want to change the world."
@@ -66,12 +66,12 @@ class testCreation(TestCase):
 
 class testUserCRUD(testCreation):
     """
-    测试user表的增删改查
+    test user table CRUD
     """
 
     def test_user_add(self):
         """
-        测试添加用户
+        test add user
         """
         user = self.get_user()
         db.session.add(user)
@@ -80,7 +80,7 @@ class testUserCRUD(testCreation):
 
     def test_user_delete(self):
         """
-        测试删除用户
+        test delete user
         """
         user = self.get_user()
         db.session.add(user)
@@ -92,12 +92,12 @@ class testUserCRUD(testCreation):
 
 class testEntriesCRUD(testCreation):
     """
-    测试entries
+    test entries table CRUD
     """
 
     def test_entries_add(self):
         """
-        测试日志添加
+        test diary add
         """
         user = self.get_user()
         db.session.add(user)
@@ -109,7 +109,7 @@ class testEntriesCRUD(testCreation):
 
     def test_entries_delete(self):
         """
-        测试日志删除
+        test diary delete
         """
         user = self.get_user()
         db.session.add(user)
@@ -120,6 +120,58 @@ class testEntriesCRUD(testCreation):
         db.session.delete(entry)
         db.session.commit()
         assert entry not in db.session
+
+
+class testUserApi(testCreation):
+    """
+    test user API
+    """
+
+    def test_user_login(self):
+        """
+        test user login
+        """
+        pass
+
+    def testRegister(self):
+        """
+        test user register
+        """
+        pass
+
+    def testLogout(self):
+        """
+        test user logout
+        """
+        pass
+
+
+class testGetCredential(testCreation):
+    """
+    test get credential
+    """
+    pass
+
+
+class testBackDB(testCreation):
+    """
+    test database backup
+    """
+    pass
+
+
+class testSendEmail(testCreation):
+    def testCustomizedTextGeneration(self):
+        """
+        test customized text generation
+        """
+        pass
+
+    def testTemplateRender(self):
+        """
+        test Ninja render
+        """
+        pass
 
 
 if __name__ == '__main__':
