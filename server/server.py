@@ -17,6 +17,7 @@ from datetime import datetime
 import arrow
 import flask
 import flask_login
+from flask_jwt import JWT, jwt_required, current_identity
 from bs4 import BeautifulSoup
 from flask import Flask
 from flask_admin import Admin
@@ -26,6 +27,18 @@ from itsdangerous import TimestampSigner
 from sqlalchemy import event, create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy_utils import PasswordType
+
+
+# jwt authenticate
+def authenticate(username, password):
+    user = User.query.filter_by(username=username).first()
+    if user.password == password:
+        return user
+
+
+def identity(payload):
+    session_id = payload['identity']
+    return User.query.filter_by(session_id=session_id).first()
 
 
 def create_app(database_uri, debug=False):
@@ -47,6 +60,7 @@ def create_app(database_uri, debug=False):
 # app.secret_key = 'super secret string'
 db = SQLAlchemy()
 app = create_app("sqlite:///./dbdir/ohlife.db", True)
+jwt = JWT(app, authenticate, identity)
 admin = Admin(app, name='ohlife', template_mode='bootstrap3')
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -87,6 +101,11 @@ class User(db.Model, flask_login.UserMixin):
     def is_active(self):
         return True
 
+    # for flask-jwt
+    @property
+    def id(self):
+        return self.session_id
+
     def get_id(self):
         return self.session_id
 
@@ -126,6 +145,12 @@ admin.add_view(OhlifeModelView(User, db.session))
 admin.add_view(OhlifeModelView(Entries, db.session))
 
 
+@app.route('/jwt-test')
+@jwt_required()
+def protected():
+    return '%s' % current_identity
+
+
 @app.before_first_request
 def initialization():
     """
@@ -159,12 +184,11 @@ def home():
         if user is not None:
             if user.password == password:
                 flask_login.login_user(user)
-                flask.flash('Logged in successfully.')
                 return flask.redirect("/admin")
             else:
-                flask.flash('Wrong Password')
+                return "Wrong Password"
         else:
-            flask.flash('Wrong Password')
+            return "Wrong Username"
     else:
         return flask.render_template("login.html")
 

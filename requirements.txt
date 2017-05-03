@@ -16,3 +16,4 @@ Flask-Admin==1.5.0
 itsdangerous==0.24
 Flask-Testing==0.6.2
 boto3==1.4.4
+Flask-JWT==0.3.2
