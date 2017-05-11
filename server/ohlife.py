@@ -14,13 +14,15 @@
 
 import arrow
 from sqlalchemy.sql.expression import func
-
 from server import Entries, User, create_app
 from server import save_signer
-from server.helpers import get_replacable, render, send_local_mail, get_credential
+from helpers import get_replacable, render, send_local_mail, get_credential, gnu_translations
+import gettext
 
 # file_dir = "/home/ubuntu/ohlife-replacement/ohlife/"
 file_dir = ""
+
+gnu_translations.install()
 
 
 def send_mail(users_text_list):
@@ -28,26 +30,28 @@ def send_mail(users_text_list):
     traverse user list and send emails
     :param users_text_list: 
     """
-    credential = get_credential()
+    # credential = get_credential()
     today = arrow.now().format('YYYY-MM-DD')
     # Todo:customize this greeting text
-    subject = u"今天是 %s - 你今天过得怎么样啊?" % today
+    # subject = u"今天是 %s - 你今天过得怎么样啊?" % today
+    subject = gnu_translations.gettext("Today is %s - How's everything going ?") % today
     for user in users_text_list:
         time_ago = users_text_list[user][0]
         data = users_text_list[user][1]
+        replacable = get_replacable(today)
         context = {
             "data": data,
             "time_ago": time_ago,
-            "replacable": get_replacable(today),
+            "replacable": replacable,
             "save_key": bytes.decode(save_signer.sign(user.session_id)),
-            "name": user.username
+            "name": user.username,
         }
         html_rendered = render("sender.html", context)
-        # print(html_rendered)
-        receiver = user.username + "<" + user.email + ">"
-        sender = "OhLife<" + credential["mail_server"] + ">"
-        send_local_mail([receiver], sender, subject,
-                        html_rendered, [])
+        print(html_rendered)
+        # receiver = user.username + "<" + user.email + ">"
+        # sender = "OhLife<" + credential["mail_server"] + ">"
+        # send_local_mail([receiver], sender, subject,
+        #                 html_rendered, [])
 
 
 def get_entry(users):
@@ -69,28 +73,30 @@ def get_entry(users):
         result = Entries.query.filter_by(time=last_year, user_id=current_id).first()
         if result:
             print(u"一年", result.text)
-            user_text_list[user] = (u"一年", result.text)
+            user_text_list[user] = (gnu_translations.gettext("A year"), result.text)
 
         result = Entries.query.filter_by(time=last_month, user_id=current_id).first()
         if result:
             print(u"一个月", result.text)
-            user_text_list[user] = (u"一个月", result.text)
+            user_text_list[user] = (gnu_translations.gettext("A month"), result.text)
 
             result = Entries.query.filter_by(time=last_week, user_id=current_id).first()
         if result:
             print(u"一周", result.text)
-            user_text_list[user] = (u"一周", result.text)
+            user_text_list[user] = (gnu_translations.gettext("A week"), result.text)
 
         result = Entries.query.filter_by(user_id=current_id).order_by(func.random()).first()
         if result:
             num_days_ago = (arrow.now() - arrow.get(result.time)).days - 1
             if num_days_ago <= 0:
-                num_days_ago = "今"
+                num_days_ago = gnu_translations.gettext("Today")
                 print(u"%s天" % str(num_days_ago), result.text)
-                user_text_list[user] = (u"%s天" % str(num_days_ago), result.text)
+                # user_text_list[user] = (u"%s天" % str(num_days_ago), result.text)
+                user_text_list[user] = (num_days_ago, result.text)
             else:
-                print(u"%s 天" % str(num_days_ago), result.text)
-                user_text_list[user] = (u"%s 天" % str(num_days_ago), result.text)
+                # print(u"%s 天" % str(num_days_ago), result.text)
+                # user_text_list[user] = (u"%s 天" % str(num_days_ago), result.text)
+                user_text_list[user] = ((str(num_days_ago) + gnu_translations.gettext("days")), result.text)
 
     return user_text_list
 

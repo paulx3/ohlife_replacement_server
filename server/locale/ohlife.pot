@@ -1,0 +1,64 @@
+# Translations template for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-05-05 14:00+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.3\n"
+
+#: helpers.py:46
+msgid "How are you doing today?<br>Is it good or do you have worries?"
+msgstr ""
+
+#: ohlife.py:37
+#, python-format
+msgid "Today is %s - How's everything going ?"
+msgstr ""
+
+#: ohlife.py:76
+msgid "A year"
+msgstr ""
+
+#: ohlife.py:81
+msgid "A month"
+msgstr ""
+
+#: ohlife.py:86
+msgid "A week"
+msgstr ""
+
+#: ohlife.py:92
+msgid "Today"
+msgstr ""
+
+#: ohlife.py:99
+msgid "days"
+msgstr ""
+
+#: templates/sender.html:4
+msgid " , do you remember ?"
+msgstr ""
+
+#: templates/sender.html:6
+msgid "ago"
+msgstr ""
+
+#: templates/sender.html:7
+msgid "Waiting for your response"
+msgstr ""
+
+#: templates/sender.html:10
+msgid "Reply to this email to write a diary"
+msgstr ""
+

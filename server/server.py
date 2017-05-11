@@ -60,6 +60,7 @@ def create_app(database_uri, debug=False):
 # app.secret_key = 'super secret string'
 db = SQLAlchemy()
 app = create_app("sqlite:///./dbdir/ohlife.db", True)
+
 jwt = JWT(app, authenticate, identity)
 admin = Admin(app, name='ohlife', template_mode='bootstrap3')
 login_manager = flask_login.LoginManager()

@@ -17,13 +17,18 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
-
 import boto3
 import jinja2
-
-from server.helpers import get_credential
+import gettext
 
 file_dir = ""
+
+gnu_translations = gettext.translation(
+    domain="ohlife",
+    localedir="locale/",
+    languages=["zh_Hans_CN"]
+)
+gnu_translations.install()
 
 
 def get_replacable(date):
@@ -38,7 +43,8 @@ def get_replacable(date):
         temp = line.split("\t")
         if date == temp[0].strip():
             return temp[1].strip()
-    return """今天，你的心情好吗？<br>心情不错，还是另有心事呢？"""
+    default_text = gnu_translations.gettext("How are you doing today?<br>Is it good or do you have worries?")
+    return default_text
 
 
 def render(template_name, context):
@@ -48,9 +54,13 @@ def render(template_name, context):
     :param context: 环境dict
     :return: 渲染出来的html
     """
-    return jinja2.Environment(
+    env = jinja2.Environment(
+        extensions=['jinja2.ext.i18n'],
         loader=jinja2.FileSystemLoader('./templates')
-    ).get_template(template_name).render(context)
+    )
+    env.install_gettext_translations(gnu_translations, newstyle=True)
+    template = env.get_template(template_name)
+    return template.render(context)
 
 
 def send_local_mail(mail_to, mail_from, subject, text, files, server="localhost"):

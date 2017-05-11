@@ -1,0 +1,74 @@
+# Chinese (Simplified, China) translations for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-05-05 13:52+0800\n"
+"PO-Revision-Date: 2017-05-05 13:56+0800\n"
+"Last-Translator: \n"
+"Language-Team: zh_Hans_CN <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.3.3\n"
+"X-Generator: Poedit 2.0.1\n"
+
+#: helpers.py:46
+msgid "How are you doing today?<br>Is it good or do you have worries?"
+msgstr "今天，你的心情好吗？心情不错，还是另有心事呢？"
+
+#: ohlife.py:37
+#, python-format
+msgid "Today is %s - How's everything going ?"
+msgstr "今天是%s - 你今天过得怎么样啊?"
+
+#: ohlife.py:76
+msgid "A year"
+msgstr "一年"
+
+#: ohlife.py:81
+msgid "A month"
+msgstr "一个月"
+
+#: ohlife.py:86
+msgid "A week"
+msgstr "一周"
+
+#: ohlife.py:92
+msgid "Today"
+msgstr "今天"
+
+#: ohlife.py:99
+msgid "days"
+msgstr "天"
+
+#: templates/sender.html:4
+msgid " , do you remember ?"
+msgstr "，还记得吗？"
+
+#: templates/sender.html:6
+msgid "ago"
+msgstr "之前"
+
+#: templates/sender.html:7
+msgid "Waiting for your response"
+msgstr "期待你的回复"
+
+#: templates/sender.html:10
+msgid "Reply to this email to write a diary"
+msgstr "回复邮件即可发布日记"
+
+#~ msgid "Days"
+#~ msgstr "天"
+
+#~ msgid "%s"
+#~ msgstr "%s"
+
+#~ msgid "fuck"
+#~ msgstr "操"

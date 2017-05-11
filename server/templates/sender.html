@@ -1,13 +1,13 @@
 <div style="width:100%;overflow:visible;text-align:center;font-size:14px;font-family:'Microsoft YaHei','微软雅黑','Lucida Grande',Verdana,Arial,Sans-Serif;">
     <div style="margin:0 auto;width:550px;overflow:hidden;background:#fefefe;line-height:24px;color:#5e5b5b;-webkit-box-shadow:0 0 3px #aaa;box-shadow:0 0 3px #aaa;">
         <div style="background:#f9f2e1;height:48px;line-height:48px;color:#f05a28;font-size:18px;">OhLife</div>
-        <div style="height:66px;margin-left:60px;line-height:66px;text-align:left">{{name}} , 还记得吗？</div>
+        <div style="height:66px;margin-left:60px;line-height:66px;text-align:left">{{name}} {{gettext(" , do you remember ?")}}</div>
         <div style="overflow:hidden;background:#f3f4f4;margin:0 59px; padding:15px 38px;text-align:left;color:#f05a28;">
-            {{data}}<br><span style="float:right;">{{time_ago}}之前</span></div>
-        <div style="margin:20px 60px;text-align:left">{{replacable}}<br>期待你的回复</div>
+            {{data}}<br><span style="float:right;">{{time_ago}}{{gettext("ago")}}</span></div>
+        <div style="margin:20px 60px;text-align:left">{{replacable}}<br>{{gettext("Waiting for your response")}}</div>
         <div style="margin:20px 60px;text-align:right">Ohlife</div>
         <div style="background:#f3f4f4;margin:100px 59px 10px;height:2px;"></div>
-        <div style="font-size:12px;line-height:27px;text-align:left;margin:0 60px 30px;color:#7e7b7b;">回复邮件即可发布日记<br>
+        <div style="font-size:12px;line-height:27px;text-align:left;margin:0 60px 30px;color:#7e7b7b;">{{gettext('Reply to this email to write a diary')}}<br>
         </div>
     </div>
     <div id="save_key" style="display:none; display:none !important;">{{save_key}}</div>
