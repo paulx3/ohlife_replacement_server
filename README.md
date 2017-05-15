@@ -35,23 +35,23 @@ However,if you have some kind of SMTP service like [SendGrid](https://sendgrid.c
 
 
 2. Clone the project
-Use `git clone https://github.com/paulx3/ohlife_relacement_server.git` to clone the
+<br>Use `git clone https://github.com/paulx3/ohlife_relacement_server.git` to clone the
 repository to your local server.
 
 
 3. Install Python 3 and its dependencies
-Install Python3 using `sudo apt-get install -y python3-pip`.
+<br>Install Python3 using `sudo apt-get install -y python3-pip`.
 Enter the project folder `cd ohlife_relacement_server` and install all python dependencies `pip3 install -r requirements.txt`
 
 
 4. Register Cloudmailin
-This project uses Cloudmailin or services alike to transform email into 
+<br>This project uses Cloudmailin or services alike to transform email into 
 post request. So you should register one first. A much more detailed 
 instructions will follow along in a couple of days.
 
 
 5. Add Credential
-You need to add several credentials before you deploy the server:
+<br>You need to add several credentials before you deploy the server:
 * Cloudmailin address
 * Default admin username and password
 * (optional) Amazon S3 credential
