@@ -63,12 +63,3 @@ msgstr "期待你的回复"
 #: templates/sender.html:10
 msgid "Reply to this email to write a diary"
 msgstr "回复邮件即可发布日记"
-
-#~ msgid "Days"
-#~ msgstr "天"
-
-#~ msgid "%s"
-#~ msgstr "%s"
-
-#~ msgid "fuck"
-#~ msgstr "操"

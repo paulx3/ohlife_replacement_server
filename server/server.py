@@ -210,10 +210,10 @@ def email_login():
         if json_request is not None:
             print(json_request)
             html = json_request["html"]
-            soup = BeautifulSoup(html, "lxml")
+            soup = BeautifulSoup(html, "html.parser")
             try:
                 save_key = soup.find(id="save_key").text.strip()
-                # 一天内session_id有效
+                # session_id will expire after 24 hours
                 session_id = save_signer.unsign(save_key, max_age=86400)
                 session_id = bytes.decode(session_id)
                 user = User.query.filter_by(session_id=session_id).first()

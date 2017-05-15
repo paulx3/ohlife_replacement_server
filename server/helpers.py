@@ -37,7 +37,6 @@ def get_replacable(date):
     :param date: 
     :return: string
     """
-    # Todo:customize replaceable text
     config = open(file_dir + "config", "r", encoding="utf8")
     for line in config:
         temp = line.split("\t")

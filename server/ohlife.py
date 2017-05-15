@@ -32,7 +32,6 @@ def send_mail(users_text_list):
     """
     # credential = get_credential()
     today = arrow.now().format('YYYY-MM-DD')
-    # Todo:customize this greeting text
     # subject = u"今天是 %s - 你今天过得怎么样啊?" % today
     subject = gnu_translations.gettext("Today is %s - How's everything going ?") % today
     for user in users_text_list:
@@ -67,7 +66,6 @@ def get_entry(users):
     last_week = arrow.now().replace(weeks=-1).format('YYYY-MM-DD')
 
     # search for history entries for each user
-    # Todo:customize time description
     for user in users:
         current_id = user.user_id
         result = Entries.query.filter_by(time=last_year, user_id=current_id).first()
