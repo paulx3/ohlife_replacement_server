@@ -19,6 +19,20 @@ All you have to do is reply this email and the reply content will be saved on th
 Pretty much the same as the original Ohlife.
 
 
+## Quickstart
+
+**Warning:** The methods below can't be used right now.
+
+
+Clone the repository and fill the credential file according to comments and hit 
+run **deploy.sh** script.
+
+Boom!
+
+
+And enjoy using it.
+
+
 ## How to deploy
 Basically , you just need a Linux server with **Python3** installed. **Python2** is
 not supported.
