@@ -7,6 +7,8 @@ After [Ohlife](http://ohlife.com/index.php) ,the Chinese alternative [juzishigua
 After lots of searching, I found that those open source replacements are either limited in 
 function or hard to deploy. So I came up with the idea using Flask to write an easy-to-deploy
 Ohlife replacement.
+
+
 ## What is it?
 In a word, it's a email-based diary system.
 
@@ -15,6 +17,8 @@ The long version:
 This program sends you an email everyday (or any time period you set) with greetings.
 All you have to do is reply this email and the reply content will be saved on the server.
 Pretty much the same as the original Ohlife.
+
+
 ## How to deploy
 Basically , you just need a Linux server with **Python3** installed. **Python2** is
 not supported.
@@ -22,25 +26,37 @@ not supported.
 The author have provided one-click install [script](https://github.com/paulx3/res/raw/master/ohlife_replacement_deploy_script.sh) in the project.But
 this script is not tested on many servers, if you want to deploy it manually or you 
 encounter some wired problems. Please follow the steps below(The Steps are only tested on Ubuntu 14):
+
+
 1. Install Postfix 
 <br>Use `sudo apt-get install postfix` to install postfix as the local SMTP server. During installation,
 you have to set your host name and server type. As for this project , you can choose 'Internet Server'.
 However,if you have some kind of SMTP service like [SendGrid](sendgrid.com), you can pass this step.
+
+
 2. Clone the project
 Use `git clone https://github.com/paulx3/ohlife_relacement_server.git` to clone the
 repository to your local server.
+
+
 3. Install Python 3 and its dependencies
 Install Python3 using `sudo apt-get install -y python3-pip`.
 Enter the project folder `cd ohlife_relacement_server` and install all python dependencies `pip3 install -r requirements.txt`
+
+
 4. Register Cloudmailin
 This project uses Cloudmailin or services alike to transform email into 
 post request. So you should register one first. A much more detailed 
 instructions will follow along in a couple of days.
+
+
 5. Add Credential
 You need to add several credentials before you deploy the server:
 * Cloudmailin address
 * Default admin username and password
 * (optional) Amazon S3 credential
+
+
 ## Localization
 The project uses Python-Babel to achieve localization.The author
  tries to tag all the text using Babel `gettext()`
