@@ -3,7 +3,7 @@
 # Ohlife Replacement Server
 An replacement or alternative to Ohlife
 ## Overview
-After [Ohlife](http://ohlife.com/index.php) ,the Chinese alternative [juzishiguang](juzitime.com) also shutdown. 
+After [Ohlife](http://ohlife.com/index.php) ,the Chinese alternative [juzishiguang](http://juzitime.com) also shutdown. 
 After lots of searching, I found that those open source replacements are either limited in 
 function or hard to deploy. So I came up with the idea using Flask to write an easy-to-deploy
 Ohlife replacement.
@@ -31,7 +31,7 @@ encounter some wired problems. Please follow the steps below(The Steps are only 
 1. Install Postfix 
 <br>Use `sudo apt-get install postfix` to install postfix as the local SMTP server. During installation,
 you have to set your host name and server type. As for this project , you can choose 'Internet Server'.
-However,if you have some kind of SMTP service like [SendGrid](sendgrid.com), you can pass this step.
+However,if you have some kind of SMTP service like [SendGrid](https://sendgrid.com), you can pass this step.
 
 
 2. Clone the project
