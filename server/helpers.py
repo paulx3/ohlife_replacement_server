@@ -50,13 +50,13 @@ def get_replacable(date):
 def render(template_name, context):
     """
     render local template
-    :param template_name: 模板名
-    :param context: 环境dict
-    :return: 渲染出来的html
+    :param template_name: template name
+    :param context: context dict
+    :return: rendered output html
     """
     env = jinja2.Environment(
         extensions=['jinja2.ext.i18n'],
-        loader=jinja2.FileSystemLoader(dir_path+'./templates')
+        loader=jinja2.FileSystemLoader('./templates')
     )
     env.install_gettext_translations(gnu_translations, newstyle=True)
     template = env.get_template(template_name)
