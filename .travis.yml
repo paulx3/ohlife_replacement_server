@@ -16,4 +16,4 @@ script:
   cd server
   coverage run test.py
 after_success:
-  coveralls
+  coveralls --verbose
