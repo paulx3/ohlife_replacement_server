@@ -10,10 +10,11 @@ python:
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
-  - pip3 install coveralls
+  - pip3 install codecov
+  - pip3 install coverage
 # command to run tests
 script:
   cd server
   coverage run test.py
 after_success:
-  coveralls
+  codecov --token=<repo token>
