@@ -14,6 +14,6 @@ install:
 # command to run tests
 script:
   cd server
-  coverage run test.py
+  coverage run --source=helpers.py,ohlife.py,server.py test.py
 after_success:
   coveralls --verbose
