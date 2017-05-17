@@ -24,8 +24,8 @@ Pretty much the same as the original Ohlife.
 **Warning:** The methods below can't be used right now.
 
 
-Clone the repository and fill the credential file according to comments and hit 
-run **deploy.sh** script.
+Clone the repository and fill the config.cfg file according to comments and hit 
+**deploy.sh** script.
 
 Boom!
 
@@ -69,6 +69,8 @@ instructions will follow along in a couple of days.
 * Cloudmailin address
 * Default admin username and password
 * (optional) Amazon S3 credential
+<br><br>There is a template file called **config.cfg** in server folder.
+The content is pretty much obvious. You can just fill in your config and credentials.
 
 
 ## Localization

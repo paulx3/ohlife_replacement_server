@@ -17,7 +17,9 @@ import json
 
 from flask_testing import TestCase
 
-from server.server import db, User, Entries, create_app, app
+from server import db, User, Entries, create_app, app
+
+from helpers import get_replacable, get_credential, render, back_db
 
 
 class testCreation(TestCase):
@@ -233,7 +235,7 @@ class testUserApi(testWebApi):
         pass
 
 
-class testHelpers:
+class testHelpers(unittest.TestCase):
     """
     test ohlife helpers
     """
@@ -242,25 +244,35 @@ class testHelpers:
         """
         test customized text generation
         """
-        pass
+        text = get_replacable("2017-03-22")
+        assert text == "Today is a test"
 
     def test_template_render(self):
         """
         test Ninja render
         """
-        pass
+        context = {
+            "data": "",
+            "time_ago": "test_time_ago",
+            "replacable": "replacable_text",
+            "save_key": "test_save_key",
+            "name": "test user",
+        }
+        html_rendered = render("sender.html", context)
+        assert "test user" in html_rendered
 
     def test_backdb(self):
         """
         test database backup
         """
-        pass
+        assert 0 == back_db()
 
     def test_get_credential(self):
         """
         test get credential
         """
-        pass
+        credential = get_credential()
+        assert type(credential) == dict
 
 
 if __name__ == '__main__':

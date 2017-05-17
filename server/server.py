@@ -27,6 +27,7 @@ from itsdangerous import TimestampSigner
 from sqlalchemy import event, create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy_utils import PasswordType
+from helpers import get_credential
 
 
 # jwt authenticate
@@ -43,21 +44,18 @@ def identity(payload):
 
 def create_app(database_uri, debug=False):
     app = Flask(__name__)
+    creadential = get_credential()
     app.debug = debug
     # set up your database
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.secret_key = 'super secret string'
+    app.secret_key = creadential["secret_key"]
     # add your modules
     db.init_app(app)
     # other setup tasks
     return app
 
 
-# app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./dbdir/ohlife.db'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.secret_key = 'super secret string'
 db = SQLAlchemy()
 app = create_app("sqlite:///./dbdir/ohlife.db", True)
 
@@ -67,6 +65,7 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 save_signer = TimestampSigner(app.config["SECRET_KEY"], salt="save")
 unsub_signer = TimestampSigner(app.config["SECRET_KEY"], salt="unsub")
+credential = get_credential()
 
 
 class User(db.Model, flask_login.UserMixin):
@@ -265,4 +264,4 @@ def unauthorized_handler():
 
 
 if __name__ == '__main__':
-    app.run('127.0.0.1', port=8090, debug=True)
+    app.run(credential["address"], port=int(credential["port"]), debug=True)

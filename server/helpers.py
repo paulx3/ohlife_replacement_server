@@ -11,7 +11,6 @@
 @desc: Utils
 
 '''
-import os
 import smtplib
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -20,6 +19,7 @@ from email.utils import COMMASPACE, formatdate
 import boto3
 import jinja2
 import gettext
+import os
 
 file_dir = ""
 
@@ -33,17 +33,17 @@ gnu_translations.install()
 
 def get_replacable(date):
     """
-    Read config file and return different greeting text according to time
+    Read replacement file and return different greeting text according to time
     :param date: 
     :return: string
     """
-    config = open(file_dir + "config", "r", encoding="utf8")
-    for line in config:
-        temp = line.split("\t")
-        if date == temp[0].strip():
-            return temp[1].strip()
-    default_text = gnu_translations.gettext("How are you doing today?<br>Is it good or do you have worries?")
-    return default_text
+    with open(file_dir + "replacement", "r", encoding="utf8") as config:
+        for line in config:
+            temp = line.split("\t")
+            if date == temp[0].strip():
+                return temp[1].strip()
+        default_text = gnu_translations.gettext("How are you doing today?<br>Is it good or do you have worries?")
+        return default_text
 
 
 def render(template_name, context):
@@ -108,7 +108,7 @@ def get_credential():
     :return: return credential dict
     """
     credential = {}
-    with open("credential", "r", encoding="utf8") as credentialFile:
+    with open("config.cfg", "r", encoding="utf8") as credentialFile:
         for line in credentialFile:
             items = line.split(":")
             credential[items[0].strip()] = items[1].strip()
@@ -120,8 +120,12 @@ def back_db():
     backup database to Amazon S3
     """
     credential = get_credential()
-    my_session = boto3.session.Session(aws_access_key_id=credential["aws_access_key_id"],
-                                       aws_secret_access_key=credential["aws_secret_access_key"])
-    s3 = my_session.resource("s3")
-    for bucket in s3.buckets.all():
-        print(bucket.name)
+    if "aws_access_key_id" in credential and "aws_secret_access_key" in credential:
+        my_session = boto3.session.Session(aws_access_key_id=credential["aws_access_key_id"],
+                                           aws_secret_access_key=credential["aws_secret_access_key"])
+        s3 = my_session.resource("s3")
+        for bucket in s3.buckets.all():
+            print(bucket.name)
+        return 1
+    else:
+        return 0

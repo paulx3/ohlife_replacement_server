@@ -30,7 +30,7 @@ def send_mail(users_text_list):
     traverse user list and send emails
     :param users_text_list: 
     """
-    # credential = get_credential()
+    credential = get_credential()
     today = arrow.now().format('YYYY-MM-DD')
     # subject = u"今天是 %s - 你今天过得怎么样啊?" % today
     subject = gnu_translations.gettext("Today is %s - How's everything going ?") % today
