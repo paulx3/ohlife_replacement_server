@@ -10,11 +10,10 @@ python:
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
-  - pip3 install python-coveralls
+  - pip3 install coveralls
 # command to run tests
 script:
   cd server
-  coverage run test.py
+  coverage run --debug --source=server test.py
 after_success:
-  cd ..
   coveralls
