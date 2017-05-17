@@ -13,6 +13,7 @@ install:
   - pip3 install coveralls
 # command to run tests
 script:
-  coverage run --source=server server/test.py
+  cd server
+  coverage run --source=server test.py
 after_success:
   coveralls
