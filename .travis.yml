@@ -15,6 +15,5 @@ install:
 script:
   cd server
   coverage run test.py
-  cd ..
 after_success:
   coveralls
