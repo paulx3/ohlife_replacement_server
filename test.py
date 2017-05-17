@@ -17,9 +17,9 @@ import json
 
 from flask_testing import TestCase
 
-from server import db, User, Entries, create_app, app
+from server.server import db, User, Entries, create_app, app
 
-from helpers import get_replacable, get_credential, render, back_db
+from server.helpers import get_replacable, get_credential, render, back_db
 
 
 class testCreation(TestCase):

@@ -21,11 +21,12 @@ import jinja2
 import gettext
 import os
 
+dir_path = os.path.dirname(os.path.realpath(__file__)) + "\\"
 file_dir = ""
 
 gnu_translations = gettext.translation(
     domain="ohlife",
-    localedir="locale/",
+    localedir=dir_path + "locale/",
     languages=["zh_Hans_CN"]
 )
 gnu_translations.install()
@@ -37,7 +38,7 @@ def get_replacable(date):
     :param date: 
     :return: string
     """
-    with open(file_dir + "replacement", "r", encoding="utf8") as config:
+    with open(dir_path + "replacement", "r", encoding="utf8") as config:
         for line in config:
             temp = line.split("\t")
             if date == temp[0].strip():
@@ -55,7 +56,7 @@ def render(template_name, context):
     """
     env = jinja2.Environment(
         extensions=['jinja2.ext.i18n'],
-        loader=jinja2.FileSystemLoader('./templates')
+        loader=jinja2.FileSystemLoader(dir_path+'./templates')
     )
     env.install_gettext_translations(gnu_translations, newstyle=True)
     template = env.get_template(template_name)
@@ -108,7 +109,7 @@ def get_credential():
     :return: return credential dict
     """
     credential = {}
-    with open("config.cfg", "r", encoding="utf8") as credentialFile:
+    with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
         for line in credentialFile:
             items = line.split(":")
             credential[items[0].strip()] = items[1].strip()

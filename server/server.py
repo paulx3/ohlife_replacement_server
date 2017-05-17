@@ -11,22 +11,25 @@
 @desc: Ohlife Server
 
 '''
+
+
 import uuid
 from datetime import datetime
 
 import arrow
 import flask
 import flask_login
-from flask_jwt import JWT, jwt_required, current_identity
 from bs4 import BeautifulSoup
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib import sqla
+from flask_jwt import JWT, jwt_required, current_identity
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import TimestampSigner
-from sqlalchemy import event, create_engine
+from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy_utils import PasswordType
+
 from helpers import get_credential
 
 
@@ -44,12 +47,12 @@ def identity(payload):
 
 def create_app(database_uri, debug=False):
     app = Flask(__name__)
-    creadential = get_credential()
+    credential = get_credential()
     app.debug = debug
     # set up your database
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.secret_key = creadential["secret_key"]
+    app.secret_key = credential["secret_key"]
     # add your modules
     db.init_app(app)
     # other setup tasks
