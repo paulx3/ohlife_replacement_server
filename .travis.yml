@@ -10,10 +10,10 @@ python:
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
-  - pip3 install codeclimate-test-reporter
+  - pip3 install coveralls
 # command to run tests
 script:
   cd server
   coverage run test.py
 after_success:
-  codeclimate-test-reporter
+  coveralls
