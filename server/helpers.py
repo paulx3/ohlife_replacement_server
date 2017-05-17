@@ -26,7 +26,7 @@ file_dir = ""
 
 gnu_translations = gettext.translation(
     domain="ohlife",
-    localedir=dir_path + "locale/",
+    localedir="locale/",
     languages=["zh_Hans_CN"]
 )
 gnu_translations.install()
