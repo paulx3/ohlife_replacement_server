@@ -16,4 +16,5 @@ script:
   cd server
   coverage run --source=helpers.py,ohlife.py,server.py test.py
 after_success:
+  cd server
   coveralls --verbose
