@@ -23,10 +23,12 @@ import boto3
 import jinja2
 
 file_dir = ""
+dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+print(dir_path)
 
 gnu_translations = gettext.translation(
     domain="ohlife",
-    localedir="locale/",
+    localedir=dir_path + "locale/",
     languages=["zh_Hans_CN"]
 )
 gnu_translations.install()
@@ -109,7 +111,7 @@ def get_credential():
     :return: return credential dict
     """
     credential = {}
-    with open("config.cfg", "r", encoding="utf8") as credentialFile:
+    with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
         for line in credentialFile:
             items = line.split(":")
             credential[items[0].strip()] = items[1].strip()
