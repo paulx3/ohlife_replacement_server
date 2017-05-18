@@ -272,6 +272,11 @@ class testHelpers(unittest.TestCase):
         credential = get_credential()
         assert type(credential) == dict
 
-
+    def test_send_email(self):
+        """
+        test send emal
+        :return: 
+        """
+        pass
 if __name__ == '__main__':
     unittest.main()
