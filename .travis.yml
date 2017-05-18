@@ -16,5 +16,6 @@ script:
   cd server
   coverage run test.py
   coverage combine
+
 after_success:
   codecov
