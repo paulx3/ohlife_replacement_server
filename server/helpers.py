@@ -11,17 +11,17 @@
 @desc: Utils
 
 '''
+import gettext
+import os
 import smtplib
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
+
 import boto3
 import jinja2
-import gettext
-import os
 
-dir_path = os.path.dirname(os.path.realpath(__file__)) + "\\"
 file_dir = ""
 
 gnu_translations = gettext.translation(
@@ -38,7 +38,7 @@ def get_replacable(date):
     :param date: 
     :return: string
     """
-    with open(dir_path + "replacement", "r", encoding="utf8") as config:
+    with open("replacement", "r", encoding="utf8") as config:
         for line in config:
             temp = line.split("\t")
             if date == temp[0].strip():
@@ -109,7 +109,7 @@ def get_credential():
     :return: return credential dict
     """
     credential = {}
-    with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
+    with open("config.cfg", "r", encoding="utf8") as credentialFile:
         for line in credentialFile:
             items = line.split(":")
             credential[items[0].strip()] = items[1].strip()

@@ -11,15 +11,13 @@
 @desc: test suite
 
 '''
-import unittest
-
 import json
+import unittest
 
 from flask_testing import TestCase
 
-from server.server import db, User, Entries, create_app, app
-
-from server.helpers import get_replacable, get_credential, render, back_db
+from helpers import get_replacable, get_credential, render, back_db
+from server import db, User, Entries, create_app, app
 
 
 class testCreation(TestCase):
