@@ -12,9 +12,11 @@
 
 '''
 import json
+import smtplib
 import unittest
 
 from flask_testing import TestCase
+from minimock import Mock
 
 from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail
 from server.server import db, User, Entries, create_app, app
@@ -274,9 +276,11 @@ class testHelpers(unittest.TestCase):
 
     def test_send_email(self):
         """
-        test send emal
+        test send email
         :return: 
         """
+        smtplib.SMTP = Mock('smtplib.SMTP')
+        smtplib.SMTP.mock_returns = Mock('smtp_connection')
         send_local_mail(mail_to=["test@test.com"], mail_from="test_sender@test.com", subject="subject_test",
                         text="body_text_test", files=[], username=None, password=None, server="localhost")
         # send_local_mail(["test@test.com"], "test_sender@test.com", "subject_test", "body_text", files=[])

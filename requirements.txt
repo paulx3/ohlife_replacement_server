@@ -16,3 +16,4 @@ itsdangerous==0.24
 Flask-Testing==0.6.2
 boto3==1.4.4
 Flask-JWT==0.3.2
+MiniMock==1.2.8
