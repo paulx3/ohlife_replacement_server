@@ -82,10 +82,10 @@ The project uses Python-Babel to achieve localization.The author
  1. (To be continued)
 ## Current developing status
 * Supporting email with photo attachment ![progress](http://progressed.io/bar/0?title=halt)
-* Third party SMTP service login support ![progress](http://progressed.io/bar/20?title=halt)
+* Third party SMTP service login support ![progress](http://progressed.io/bar/80?title=halt)
 * At least 90% code coverage [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_relacement_server/badge.svg)](https://coveralls.io/github/paulx3/ohlife_relacement_server)
 * Email sending function ![progress](http://progressed.io/bar/80?title=ongoing)
-* Deploy instruction ![progress](http://progressed.io/bar/50?title=ongoing)
+* Deploy instruction ![progress](http://progressed.io/bar/65?title=ongoing)
 * Deploy script ![progress](http://progressed.io/bar/40?title=ongoing)
 * Front and end support for mobile app ![progress](http://progressed.io/bar/60?title=ongoing)
 * Mobile app ![progress](http://progressed.io/bar/40?title=ongoing)
