@@ -66,7 +66,7 @@ def render(template_name, context):
     return template.render(context)
 
 
-def send_local_mail(mail_to, mail_from, subject, text, files, username=None, password=None, server="localhost", ):
+def send_local_mail(mail_to, mail_from, subject, text, files, username=None, password=None, server="localhost"):
     """
     send email through SMTP server
     :param mail_to: receiver

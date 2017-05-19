@@ -277,7 +277,9 @@ class testHelpers(unittest.TestCase):
         test send emal
         :return: 
         """
-        send_local_mail(["test@test.com"], "test_sender@test.com", "subject_test", "body_text", files=[])
+        send_local_mail(mail_to=["test@test.com"], mail_from="test_sender@test.com", subject="subject_test",
+                        text="body_text_test", files=[], username=None, password=None, server="localhost")
+        # send_local_mail(["test@test.com"], "test_sender@test.com", "subject_test", "body_text", files=[])
 
 
 if __name__ == '__main__':
