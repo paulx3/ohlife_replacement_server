@@ -16,7 +16,7 @@ import unittest
 
 from flask_testing import TestCase
 
-from server.helpers import get_credential, back_db
+from server.helpers import get_credential, back_db, render, get_replacable
 from server.server import db, User, Entries, create_app, app
 
 
@@ -238,26 +238,26 @@ class testHelpers(unittest.TestCase):
     test ohlife helpers
     """
 
-    # def test_customized_text_generation(self):
-    #     """
-    #     test customized text generation
-    #     """
-    #     text = get_replacable("2017-03-22")
-    #     assert text == "Today is a test"
+    def test_customized_text_generation(self):
+        """
+        test customized text generation
+        """
+        text = get_replacable("2017-03-22")
+        assert text == "Today is a test"
 
-    # def test_template_render(self):
-    #     """
-    #     test Ninja render
-    #     """
-    #     context = {
-    #         "data": "",
-    #         "time_ago": "test_time_ago",
-    #         "replacable": "replacable_text",
-    #         "save_key": "test_save_key",
-    #         "name": "test user",
-    #     }
-    #     html_rendered = render("sender.html", context)
-    #     assert "test user" in html_rendered
+    def test_template_render(self):
+        """
+        test Ninja render
+        """
+        context = {
+            "data": "",
+            "time_ago": "test_time_ago",
+            "replacable": "replacable_text",
+            "save_key": "test_save_key",
+            "name": "test user",
+        }
+        html_rendered = render("sender.html", context)
+        assert "test user" in html_rendered
 
     def test_backdb(self):
         """
@@ -278,5 +278,7 @@ class testHelpers(unittest.TestCase):
         :return: 
         """
         pass
+
+
 if __name__ == '__main__':
     unittest.main()

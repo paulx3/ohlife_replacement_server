@@ -40,7 +40,7 @@ def get_replacable(date):
     :param date: 
     :return: string
     """
-    with open("replacement", "r", encoding="utf8") as config:
+    with open(dir_path + "replacement", "r", encoding="utf8") as config:
         for line in config:
             temp = line.split("\t")
             if date == temp[0].strip():
@@ -58,7 +58,7 @@ def render(template_name, context):
     """
     env = jinja2.Environment(
         extensions=['jinja2.ext.i18n'],
-        loader=jinja2.FileSystemLoader('./templates')
+        loader=jinja2.FileSystemLoader(dir_path + './templates')
     )
     env.install_gettext_translations(gnu_translations, newstyle=True)
     template = env.get_template(template_name)

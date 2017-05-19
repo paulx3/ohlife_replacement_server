@@ -8,7 +8,7 @@
 
 @time: 2017/5/18 20:37
 
-@desc:
+@desc: initialize sys path
 
 '''
 import inspect
