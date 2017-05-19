@@ -14,10 +14,10 @@
 
 import arrow
 from sqlalchemy.sql.expression import func
+
+from helpers import get_replacable, render, get_credential, gnu_translations
 from server import Entries, User, create_app
 from server import save_signer
-from helpers import get_replacable, render, send_local_mail, get_credential, gnu_translations
-import gettext
 
 # file_dir = "/home/ubuntu/ohlife-replacement/ohlife/"
 file_dir = ""
@@ -47,10 +47,12 @@ def send_mail(users_text_list):
         }
         html_rendered = render("sender.html", context)
         print(html_rendered)
-        # receiver = user.username + "<" + user.email + ">"
-        # sender = "OhLife<" + credential["mail_server"] + ">"
-        # send_local_mail([receiver], sender, subject,
-        #                 html_rendered, [])
+        receiver = user.username + "<" + user.email + ">"
+        sender = "OhLife<" + credential["mail_server"] + ">"
+        # send_local_mail([receiver], sender, subject, html_rendered, [])
+        # send_local_mail(mail_to=[receiver], mail_from=sender, subject=subject,
+        #                 text=html_rendered, files=[], username=credential["smtp_username"]
+        #                 , password=credential["smtp_password"], server=credential["smtp_server"])
 
 
 def get_entry(users):

@@ -8,6 +8,13 @@ python:
   - "3.7-dev" # 3.7 development branch
   - "nightly" # currently points to 3.7-dev
 # command to install dependencies
+before_install:
+  - debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+  - debconf-set-selections <<< "postfix postfix/mailname string your.host.name"
+  - sudo apt-get update
+  - sudo apt-get install -y
+  - sudo apt-get install -y libxml2-dev libxslt1-dev
+  - sudo apt-get install -y postfix
 install:
   - pip3 install -r requirements.txt
   - pip3 install coveralls
@@ -16,3 +23,5 @@ script:
   coverage run --source=server test.py
 after_success:
   coveralls
+addons:
+  srcclr: true

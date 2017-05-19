@@ -16,7 +16,7 @@ import unittest
 
 from flask_testing import TestCase
 
-from server.helpers import get_credential, back_db, render, get_replacable
+from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail
 from server.server import db, User, Entries, create_app, app
 
 
@@ -277,7 +277,7 @@ class testHelpers(unittest.TestCase):
         test send emal
         :return: 
         """
-        pass
+        send_local_mail(["test@test.com"], "test_sender@test.com", "subject_test", "body_text", files=[])
 
 
 if __name__ == '__main__':
