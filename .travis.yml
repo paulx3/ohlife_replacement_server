@@ -12,7 +12,6 @@ before_install:
   - debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
   - debconf-set-selections <<< "postfix postfix/mailname string your.host.name"
   - sudo apt-get update
-  - sudo apt-get install -y
   - sudo apt-get install -y libxml2-dev libxslt1-dev
   - sudo apt-get install -y postfix
 install:
