@@ -29,7 +29,10 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy_utils import PasswordType
 
-from helpers import get_credential
+try:
+    from helpers import credential
+except ImportError:
+    from server.helpers import credential
 
 
 # jwt authenticate
@@ -46,7 +49,6 @@ def identity(payload):
 
 def create_app(database_uri, debug=False):
     app = Flask(__name__)
-    credential = get_credential()
     app.debug = debug
     # set up your database
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
@@ -67,7 +69,6 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 save_signer = TimestampSigner(app.config["SECRET_KEY"], salt="save")
 unsub_signer = TimestampSigner(app.config["SECRET_KEY"], salt="unsub")
-credential = get_credential()
 
 
 class User(db.Model, flask_login.UserMixin):

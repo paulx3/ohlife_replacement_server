@@ -18,8 +18,14 @@ import unittest
 from flask_testing import TestCase
 from minimock import Mock
 
-from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail
-from server.server import db, User, Entries, create_app, app
+try:
+    from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail
+    from server.server import db, User, Entries, create_app, app
+    from server.ohlife import send_mail, get_entry, get_users
+except ImportError:
+    from helpers import get_credential, back_db, render, get_replacable, send_local_mail
+    from server import db, User, Entries, create_app, app
+    from ohlife import send_mail, get_entry, get_users
 
 
 class testCreation(TestCase):
@@ -95,6 +101,42 @@ class testUserCRUD(testCreation):
         db.session.delete(user)
         db.session.commit()
         assert user not in db.session
+
+
+class testOhlifeSender(testCreation):
+    def test_get_user(self):
+        user = self.get_user()
+        db.session.add(user)
+        db.session.commit()
+        assert user in db.session
+        assert user == get_users()[0]
+
+    def test_get_entry(self):
+        user = self.get_user()
+        db.session.add(user)
+        db.session.commit()
+        assert user in db.session
+        # add test entry
+        entry = Entries("I want to change the world", user.user_id)
+        db.session.add(entry)
+        db.session.commit()
+        assert entry in db.session
+        entry_list = get_entry([user])
+        assert entry_list[user][0] == "今天"
+
+    def test_send_mail(self):
+        smtplib.SMTP = Mock('smtplib.SMTP')
+        smtplib.SMTP.mock_returns = Mock('smtp_connection')
+        user = self.get_user()
+        db.session.add(user)
+        db.session.commit()
+        assert user in db.session
+        # add test entry
+        entry = Entries("I want to change the world", user.user_id)
+        db.session.add(entry)
+        db.session.commit()
+        assert entry in db.session
+        send_mail(get_entry(get_users()))
 
 
 class testEntriesCRUD(testCreation):
@@ -274,7 +316,7 @@ class testHelpers(unittest.TestCase):
         credential = get_credential()
         assert type(credential) == dict
 
-    def test_send_email(self):
+    def test_send_email_fucntion(self):
         """
         test send email
         :return: 

@@ -13,11 +13,17 @@
 '''
 
 import arrow
+
 from sqlalchemy.sql.expression import func
 
-from helpers import get_replacable, render, get_credential, gnu_translations
-from server import Entries, User, create_app
-from server import save_signer
+try:
+    from helpers import get_replacable, render, get_credential, gnu_translations, send_local_mail
+except ImportError:
+    from server.helpers import get_replacable, render, get_credential, gnu_translations, send_local_mail
+try:
+    from server import Entries, User, create_app, save_signer
+except ImportError:
+    from server.server import Entries, User, create_app, save_signer
 
 # file_dir = "/home/ubuntu/ohlife-replacement/ohlife/"
 file_dir = ""
@@ -48,11 +54,11 @@ def send_mail(users_text_list):
         html_rendered = render("sender.html", context)
         print(html_rendered)
         receiver = user.username + "<" + user.email + ">"
-        sender = "OhLife<" + credential["mail_server"] + ">"
+        sender = "OhLife<" + credential["smtp_server"] + ">"
         # send_local_mail([receiver], sender, subject, html_rendered, [])
-        # send_local_mail(mail_to=[receiver], mail_from=sender, subject=subject,
-        #                 text=html_rendered, files=[], username=credential["smtp_username"]
-        #                 , password=credential["smtp_password"], server=credential["smtp_server"])
+        send_local_mail(mail_to=[receiver], mail_from=sender, subject=subject,
+                        text=html_rendered, files=[], username=credential["smtp_username"]
+                        , password=credential["smtp_password"], server=credential["smtp_server"])
 
 
 def get_entry(users):
