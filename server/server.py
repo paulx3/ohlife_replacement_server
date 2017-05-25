@@ -266,5 +266,5 @@ def unauthorized_handler():
     return 'Unauthorized'
 
 
-if __name__ == '__main__':
-    app.run(credential["address"], port=int(credential["port"]), debug=True)
+if __name__ == '__main__':  # pragma: no cover
+    app.run(credential["address"], port=int(credential["port"]), debug=False)

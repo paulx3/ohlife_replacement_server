@@ -99,7 +99,7 @@ def send_local_mail(mail_to, mail_from, subject, text, files, username=None, pas
     # msg.attach(MIMEText(text, _subtype='html', _charset='utf-8'))
     msg.attach(MIMEText(text, _subtype='html', _charset='utf-8'))
 
-    for f in files:
+    for f in files:  # pragma: no cover
         part = MIMEBase('application', "octet-stream")
         part.set_payload(open(f, "rb").read())
         encoders.encode_base64(part)
@@ -132,7 +132,7 @@ def back_db():
     backup database to Amazon S3
     """
     credential = get_credential()
-    if "aws_access_key_id" in credential and "aws_secret_access_key" in credential:
+    if "aws_access_key_id" in credential and "aws_secret_access_key" in credential:  # pragma: no cover
         my_session = boto3.session.Session(aws_access_key_id=credential["aws_access_key_id"],
                                            aws_secret_access_key=credential["aws_secret_access_key"])
         s3 = my_session.resource("s3")

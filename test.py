@@ -104,7 +104,14 @@ class testUserCRUD(testCreation):
 
 
 class testOhlifeSender(testCreation):
+    """
+    test ohlife timer sender
+    """
+
     def test_get_user(self):
+        """
+        test get user from db
+        """
         user = self.get_user()
         db.session.add(user)
         db.session.commit()
@@ -112,6 +119,9 @@ class testOhlifeSender(testCreation):
         assert user == get_users()[0]
 
     def test_get_entry(self):
+        """
+        test get entry from db according to user list
+        """
         user = self.get_user()
         db.session.add(user)
         db.session.commit()
@@ -125,6 +135,9 @@ class testOhlifeSender(testCreation):
         assert entry_list[user][0] == "今天"
 
     def test_send_mail(self):
+        """
+        test send mail through SMTP server function
+        """
         smtplib.SMTP = Mock('smtplib.SMTP')
         smtplib.SMTP.mock_returns = Mock('smtp_connection')
         user = self.get_user()
@@ -137,6 +150,19 @@ class testOhlifeSender(testCreation):
         db.session.commit()
         assert entry in db.session
         send_mail(get_entry(get_users()))
+
+    def test_email_login(self):
+        """
+        test email login function
+        """
+        pass
+
+    def test_protected_redirect(self):
+        """
+        test protected save function
+        :return: 
+        """
+        pass
 
 
 class testEntriesCRUD(testCreation):
