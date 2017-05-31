@@ -12,6 +12,7 @@
 
 '''
 import json
+import random
 import smtplib
 import unittest
 
@@ -20,11 +21,11 @@ from minimock import Mock
 
 try:
     from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail
-    from server.server import db, User, Entries, create_app, app
+    from server.server import db, User, Entries, create_app, app, save_signer
     from server.ohlife import send_mail, get_entry, get_users
 except ImportError:
     from helpers import get_credential, back_db, render, get_replacable, send_local_mail
-    from server import db, User, Entries, create_app, app
+    from server import db, User, Entries, create_app, app, save_signer
     from ohlife import send_mail, get_entry, get_users
 
 
@@ -151,19 +152,6 @@ class testOhlifeSender(testCreation):
         assert entry in db.session
         send_mail(get_entry(get_users()))
 
-    def test_email_login(self):
-        """
-        test email login function
-        """
-        pass
-
-    def test_protected_redirect(self):
-        """
-        test protected save function
-        :return: 
-        """
-        pass
-
 
 class testEntriesCRUD(testCreation):
     """
@@ -213,7 +201,7 @@ class testWebApi(unittest.TestCase):
         Returns: user object
 
         """
-        user = User("test_account", testWebApi.get_mock_user_password(), "test@test.com")
+        user = User("test_account", testWebApi.get_mock_user_password(), "test@test.com" + str(random.randint(1, 999)))
         return user
 
     def assert_flashes(self, expected_message, expected_category='message'):
@@ -299,6 +287,48 @@ class testUserApi(testWebApi):
     def test_register(self):
         """
         test user register
+        """
+        pass
+
+
+class testBasicProtectedSave(testWebApi):
+    """
+    test diary save flow
+    """
+
+    def test_email_login(self):
+        """
+        test email login function
+        """
+        user = testCreation.get_user()
+        db.session.add(user)
+        db.session.commit()
+        assert user in db.session
+        context = {
+            "data": "test data",
+            "time_ago": "test time aog",
+            "replacable": "test_replacable",
+            "save_key": bytes.decode(save_signer.sign(user.session_id)),
+            "name": user.username,
+        }
+        html_rendered = render("sender.html", context)
+        response = self.client.post("/save", data=json.dumps(dict(html=html_rendered)),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 302)
+        assert '/protected' in response.location
+
+    def test_protected_unauthorized(self):
+        """
+        access protected without logging
+        :return: 
+        """
+        response = self.client.get("/protected")
+        assert b"Unauthorized" == response.data
+
+    def test_protected_authorized(self):
+        """
+        access protected with logging
+        :return:
         """
         pass
 

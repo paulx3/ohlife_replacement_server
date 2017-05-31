@@ -243,7 +243,7 @@ def protected_save():
     print(user_id)
     entry = Entries(str(uuid.uuid1()), today, entry, user_id)
     db.session.add(entry)
-    # db.session.commit()
+    db.session.commit()
     return "Save Success"
 
 
