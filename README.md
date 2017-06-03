@@ -75,8 +75,8 @@ The content is pretty much obvious. You can just fill in your config and credent
 
 ## Localization
 This project has already provided two locale options. All you need to change is `locale:en-US` in `config.cfg` 
-file. For example, if you want the Chinese version , you can change `locale:zh_Hans_CN` in `config.cfg`
-to `locale:en-US`.
+file. For example, if you want the Chinese version , you can change `locale:en-US` in `config.cfg`
+to `locale:zh_Hans_CN`.
 
 The project uses Python-Babel to achieve localization.The author
  tries to tag all the text using Babel `gettext()`
