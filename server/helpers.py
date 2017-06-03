@@ -32,11 +32,20 @@ with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
         items = line.split(":")
         credential[items[0].strip()] = items[1].strip()
 
-gnu_translations = gettext.translation(
-    domain="ohlife",
-    localedir=dir_path + "locale/",
-    languages=[credential["locale"]]
-)
+try:
+    gnu_translations = gettext.translation(
+        domain="ohlife",
+        localedir=dir_path + "locale/",
+        languages=[credential["locale"]]
+    )
+except FileNotFoundError:
+    print("Custom translation file not found.Using default locale")
+    gnu_translations = gettext.translation(
+        domain="ohlife",
+        localedir=dir_path + "locale/",
+        languages=[credential["locale"]]
+    )
+
 gnu_translations.install()
 
 

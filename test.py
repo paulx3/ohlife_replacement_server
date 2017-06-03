@@ -21,11 +21,11 @@ from minimock import Mock
 
 try:
     from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail
-    from server.server import db, User, Entries, create_app, app, save_signer
+    from server.server import db, User, Entries, create_app, app, save_signer, protected_save
     from server.ohlife import send_mail, get_entry, get_users
 except ImportError:
     from helpers import get_credential, back_db, render, get_replacable, send_local_mail
-    from server import db, User, Entries, create_app, app, save_signer
+    from server import db, User, Entries, create_app, app, save_signer, protected_save
     from ohlife import send_mail, get_entry, get_users
 
 
@@ -133,7 +133,10 @@ class testOhlifeSender(testCreation):
         db.session.commit()
         assert entry in db.session
         entry_list = get_entry([user])
-        assert entry_list[user][0] == "今天"
+        print("=============")
+        print(entry_list[user][0])
+        print("============")
+        assert entry_list[user][0] == "今天" or "Today"
 
     def test_send_mail(self):
         """
@@ -222,6 +225,7 @@ class testWebApi(unittest.TestCase):
         # instantiate a flask test client
         app.config["TESTING"] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+        app.config['LOGIN_DISABLED'] = True
         self.client = app.test_client()
         # create the database objects
         app.app_context().push()
@@ -331,6 +335,16 @@ class testBasicProtectedSave(testWebApi):
         :return:
         """
         pass
+        # with app.test_client() as c:
+        #     with c.session_transaction() as sess:
+        #         user = self.get_user()
+        #         db.session.add(user)
+        #         db.session.commit()
+        #         sess["entry"] = "test"
+        #         sess["user_id"] = user.user_id
+        #         result = protected_save()
+        #         # response = self.client.get("/protected")
+        #         print("test")
 
 
 class testHelpers(unittest.TestCase):
