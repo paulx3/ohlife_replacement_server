@@ -74,13 +74,30 @@ The content is pretty much obvious. You can just fill in your config and credent
 
 
 ## Localization
+This project has already provided two locale options. All you need to change is `locale:en-US` in `config.cfg` 
+file. For example, if you want the Chinese version , you can change `locale:zh_Hans_CN` in `config.cfg`
+to `locale:en-US`.
+
 The project uses Python-Babel to achieve localization.The author
  tries to tag all the text using Babel `gettext()`
  
  
+ 
+ I know the locale function for this app can be over-engineering. 
+ 
+ So if you have a better option.
+ You can open an issue or pull request.
  So if you are interested in localizing the project, please folow instruction below:
- 1. (To be continued)
+ 1. Enter `locale` folder under `server` folder and copy the folder `en-US` and 
+ give it a new name.
+ 2. Using tools like [Poedit](https://poedit.net/) to edit `ohlife.po` file and
+ translate. The tool will automatically compile po file into mo binary file.
+ 3. Edit `locale` in `config.cfg` to the name of your new folder. For example, if 
+ you add a new folder called `spanish`. Then you have to use `locale:spanish`.
+ 
+ For detailed example of how to use Babel to do the localization , you can check [this](https://github.com/iver56/python-i18n-basics.git) repository.
 ## Current developing status
+* Add logging system ![progress](http://progressed.io/bar/0?title=ongoing)
 * Supporting email with photo attachment ![progress](http://progressed.io/bar/0?title=halt)
 * Third party SMTP service login support ![progress](http://progressed.io/bar/80?title=halt)
 * At least 80% code coverage [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_relacement_server/badge.svg)](https://coveralls.io/github/paulx3/ohlife_relacement_server)

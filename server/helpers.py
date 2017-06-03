@@ -38,7 +38,7 @@ try:
         localedir=dir_path + "locale/",
         languages=[credential["locale"]]
     )
-except FileNotFoundError:
+except FileNotFoundError:  # pragma: no cover
     print("Custom translation file not found.Using default locale")
     gnu_translations = gettext.translation(
         domain="ohlife",
