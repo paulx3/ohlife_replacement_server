@@ -132,7 +132,10 @@ def get_credential():
     with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
         for line in credentialFile:
             items = line.split(":")
-            credential[items[0].strip()] = items[1].strip()
+            value = items[1].strip()
+            if value == "":
+                value = None
+            credential[items[0].strip()] = value
     return credential
 
 
