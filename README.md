@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/paulx3/ohlife_relacement_server.svg?branch=master)](https://travis-ci.org/paulx3/ohlife_relacement_server)
+[![Build Status](https://travis-ci.org/paulx3/ohlife_replacement_server.svg?branch=master)](https://travis-ci.org/paulx3/ohlife_replacement_server)
 [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_relacement_server/badge.svg)](https://coveralls.io/github/paulx3/ohlife_relacement_server)
 # Ohlife Replacement Server
 An replacement or alternative to Ohlife
@@ -58,10 +58,16 @@ repository to your local server.
 Enter the project folder `cd ohlife_relacement_server` and install all python dependencies `pip3 install -r requirements.txt`
 
 
-4. Register Cloudmailin
-<br>This project uses Cloudmailin or services alike to transform email into 
-post request. So you should register one first. A much more detailed 
-instructions will follow along in a couple of days.
+4. Register SendGrid
+<br>This project uses SendGrid or services alike to transform email into 
+post request. So you should register one first. And by default, it uses SendGrid's SMTP API
+to send emails. 
+<br>After you log in your SendGrid account, you can follow [this](https://app.sendgrid.com/guide/integrate/langs/smtp)
+guide to get your SMTP credential and set in `config.cfg` file. And you can follow [this](https://sendgrid.com/docs/API_Reference/Webhooks/inbound_email.html)
+tutorial to set inbound email parse. 
+<br>The inbound email parse should send POST request to `http://your.domain.name:port/save`. Say
+ if you deploy the program on test.com:8090, then the target will be `http://test.com:8090/save`.
+
 
 
 5. Add Credential
@@ -73,9 +79,6 @@ instructions will follow along in a couple of days.
 The content is pretty much obvious. You can just fill in your config and credentials.
 
 
-
-6. Set Cron Task
-<br>You need set Cron task to run `ohlife.py` to send email to all the users.
 ## Localization
 This project has already provided two locale options. All you need to change is `locale:en-US` in `config.cfg` 
 file. For example, if you want the Chinese version , you can change `locale:en-US` in `config.cfg`
@@ -100,18 +103,20 @@ The project uses Python-Babel to achieve localization.The author
  
  For detailed example of how to use Babel to do the localization , you can check [this](https://github.com/iver56/python-i18n-basics.git) repository.
 ## Current developing status
-* Add logging system ![progress](http://progressed.io/bar/0?title=ongoing)
+* Limit key API(Email Sending) access![progress](http://progressed.io/bar/100?title=done)
+* Json Export and import function ![progress](http://progressed.io/bar/0?title=halt)
+* Logging system ![progress](http://progressed.io/bar/100?title=done)
 * Supporting email with photo attachment ![progress](http://progressed.io/bar/0?title=halt)
-* Third party SMTP service login support ![progress](http://progressed.io/bar/80?title=halt)
+* Third party SMTP service login support ![progress](http://progressed.io/bar/100?title=done)
 * At least 80% code coverage [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_relacement_server/badge.svg)](https://coveralls.io/github/paulx3/ohlife_relacement_server)
-* Email sending function ![progress](http://progressed.io/bar/80?title=ongoing)
+* Email sending function ![progress](http://progressed.io/bar/100?title=done)
 * Deploy instruction ![progress](http://progressed.io/bar/65?title=ongoing)
 * Deploy script ![progress](http://progressed.io/bar/40?title=ongoing)
-* Front and end support for mobile app ![progress](http://progressed.io/bar/60?title=ongoing)
-* Mobile app ![progress](http://progressed.io/bar/40?title=ongoing)
+* Front and end support for mobile app ![progress](http://progressed.io/bar/70?title=ongoing)
+* Mobile app ![progress](http://progressed.io/bar/60?title=ongoing)
 * Chinese Readme ![progress](http://progressed.io/bar/0?title=halt)
 * Localization ![progress](http://progressed.io/bar/100?title=done)
 * Amazon S3 backup service ![progress](http://progressed.io/bar/90?title=halt)
-* A timer for backup and email sending task ![progress](http://progressed.io/bar/20?title=halt)
+* A timer for backup and email sending task ![progress](http://progressed.io/bar/20?title=ongoing)
 
 
