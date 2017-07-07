@@ -334,7 +334,9 @@ class testBasicProtectedSave(testWebApi):
         access protected with logging
         :return:
         """
-        pass
+        print("=======================")
+        response = app.test_client().get("/protected")
+        print("=========================")
         # with app.test_client() as c:
         #     with c.session_transaction() as sess:
         #         user = self.get_user()
