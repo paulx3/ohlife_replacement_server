@@ -37,16 +37,13 @@ from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import TimestampSigner, URLSafeSerializer, BadSignature
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+from sqlalchemy.sql.expression import func
 from sqlalchemy_utils import PasswordType
 
 try:
-    from helpers import credential, send_local_mail, render
+    from helpers import credential, send_local_mail, render, gnu_translations, credential, get_replacable
 except ImportError:
-    from server.helpers import credential, send_local_mail, render
-try:
-    import ohlife
-except ImportError:
-    import server.ohlife
+    from server.helpers import credential, send_local_mail, render, gnu_translations, credential, get_replacable
 
 
 # jwt authenticate
@@ -95,10 +92,14 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["30 per minute", "10 per second"]
 )
+
 # logging
 handler = RotatingFileHandler('foo.log', maxBytes=100000, backupCount=3)
 handler.setLevel(logging.ERROR)
-
+# sentry error handler
+# client = Client('https://14d2b0b457fa450e958d27d8e179aab3:1ddb71dec9b1442896c7baa26aa4ffc3@sentry.io/187752')
+# handler = SentryHandler(client)
+# handler.setLevel(logging.ERROR)
 app.logger.addHandler(handler)
 # APScheduler
 jobstores = {
@@ -115,6 +116,8 @@ job_defaults = {
 }
 scheduler = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
 scheduler.start()
+# i18n
+gnu_translations.install()
 
 
 @app.after_request
@@ -520,6 +523,81 @@ def send_schedule_email(user_id):
     # user_wrapper = [user]
     # user_text_list = ohlife.get_entry(user_wrapper)
     # ohlife.send_mail(user_text_list)
+
+
+def send_mail(users_text_list):
+    """
+    traverse user list and send emails
+    :param users_text_list:
+    """
+    today = arrow.now().format('YYYY-MM-DD')
+    # subject = u"今天是 %s - 你今天过得怎么样啊?" % today
+    subject = gnu_translations.gettext("Today is %s - How's everything going ?") % today
+    for user in users_text_list:
+        time_ago = users_text_list[user][0]
+        data = users_text_list[user][1]
+        replacable = get_replacable(today)
+        context = {
+            "data": data,
+            "time_ago": time_ago,
+            "replacable": replacable,
+            "save_key": bytes.decode(save_signer.sign(user.session_id)),
+            "name": user.username,
+        }
+        html_rendered = render("sender.html", context)
+        print(html_rendered)
+        receiver = user.username + "<" + user.email + ">"
+        sender = "OhLife<" + credential["smtp_server"] + ">"
+        # send_local_mail([receiver], sender, subject, html_rendered, [])
+        send_local_mail(mail_to=[receiver], mail_from=sender, subject=subject,
+                        text=html_rendered, files=[], username=credential["smtp_username"]
+                        , password=credential["smtp_password"], server=credential["smtp_server"])
+
+
+def get_entry(users):
+    """
+    get corresponding history entries for each user
+    :param users:user object list
+    :return: return {user_id:(time_ago,text)}
+    """
+    user_text_list = {}
+    # calculate time gap
+    last_year = arrow.now().replace(years=-1).format('YYYY-MM-DD')
+    last_month = arrow.now().replace(months=-1).format('YYYY-MM-DD')
+    last_week = arrow.now().replace(weeks=-1).format('YYYY-MM-DD')
+
+    # search for history entries for each user
+    for user in users:
+        current_id = user.user_id
+        result = Entries.query.filter_by(time=last_year, user_id=current_id).first()
+        if result:  # pragma: no cover
+            print(u"一年", result.text)
+            user_text_list[user] = (gnu_translations.gettext("A year"), result.text)
+
+        result = Entries.query.filter_by(time=last_month, user_id=current_id).first()
+        if result:  # pragma: no cover
+            print(u"一个月", result.text)
+            user_text_list[user] = (gnu_translations.gettext("A month"), result.text)
+
+            result = Entries.query.filter_by(time=last_week, user_id=current_id).first()
+        if result:  # pragma: no cover
+            print(u"一周", result.text)
+            user_text_list[user] = (gnu_translations.gettext("A week"), result.text)
+
+        result = Entries.query.filter_by(user_id=current_id).order_by(func.random()).first()
+        if result:
+            num_days_ago = (arrow.now() - arrow.get(result.time)).days - 1
+            if num_days_ago <= 0:
+                num_days_ago = gnu_translations.gettext("Today")
+                print(u"%s天" % str(num_days_ago), result.text)
+                # user_text_list[user] = (u"%s天" % str(num_days_ago), result.text)
+                user_text_list[user] = (num_days_ago, result.text)
+            else:
+                # print(u"%s 天" % str(num_days_ago), result.text)
+                # user_text_list[user] = (u"%s 天" % str(num_days_ago), result.text)
+                user_text_list[user] = ((str(num_days_ago) + gnu_translations.gettext("days")), result.text)
+
+    return user_text_list
 
 
 @app.route('/activate/<payload>')

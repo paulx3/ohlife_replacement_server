@@ -52,7 +52,7 @@ gnu_translations.install()
 def get_replacable(date):
     """
     Read replacement file and return different greeting text according to time
-    :param date: 
+    :param date:
     :return: string
     """
     with open(dir_path + "replacement", "r", encoding="utf8") as config:
