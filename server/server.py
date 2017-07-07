@@ -126,10 +126,7 @@ def after_request(response):
         user_name = current_identity.username
     except AttributeError:
         user_name = "User didn't log in"
-    try:
-        payload = flask.request.get_json();
-    except AttributeError:
-        payload = "No payload"
+    payload = flask.request.get_json()
     app.logger.info(
         """
         Time:      {time}
@@ -518,7 +515,7 @@ def send_schedule_email(user_id):
     :param user_id:user id
     :return:
     """
-    print("fuck the world")
+    print("temporarily disable")
     # user = server.User.query.filter_by(user_id=user_id).get_or_404()
     # user_wrapper = [user]
     # user_text_list = ohlife.get_entry(user_wrapper)
