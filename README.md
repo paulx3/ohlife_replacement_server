@@ -24,7 +24,7 @@ Pretty much the same as the original Ohlife.
 **Warning:** The methods below can't be used right now.
 
 
-Clone the repository and fill the config.cfg file according to comments and hit 
+Clone the repository and fill the config.yaml file according to comments and hit 
 **deploy.sh** script.
 
 Boom!
@@ -103,20 +103,21 @@ The project uses Python-Babel to achieve localization.The author
  
  For detailed example of how to use Babel to do the localization , you can check [this](https://github.com/iver56/python-i18n-basics.git) repository.
 ## Current developing status
-* Limit key API(Email Sending) access![progress](http://progressed.io/bar/100?title=done)
+* Change to use Yaml as config ![progress](http://progressed.io/bar/100?title=done)
+* Limit key API(Email Sending) access ![progress](http://progressed.io/bar/100?title=done)
 * Json Export and import function ![progress](http://progressed.io/bar/0?title=halt)
 * Logging system ![progress](http://progressed.io/bar/100?title=done)
-* Supporting email with photo attachment ![progress](http://progressed.io/bar/0?title=halt)
+* Supporting email with photo attachment ![progress](http://progressed.io/bar/20?title=ongoing)
 * Third party SMTP service login support ![progress](http://progressed.io/bar/100?title=done)
-* At least 80% code coverage [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_relacement_server/badge.svg)](https://coveralls.io/github/paulx3/ohlife_relacement_server)
+* At least 80% code coverage [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_replacement_server/badge.svg?branch=master)](https://coveralls.io/github/paulx3/ohlife_replacement_server?branch=master)
 * Email sending function ![progress](http://progressed.io/bar/100?title=done)
 * Deploy instruction ![progress](http://progressed.io/bar/65?title=ongoing)
-* Deploy script ![progress](http://progressed.io/bar/40?title=ongoing)
+* Deploy script ![progress](http://progressed.io/bar/85?title=ongoing)
 * Front and end support for mobile app ![progress](http://progressed.io/bar/70?title=ongoing)
-* Mobile app ![progress](http://progressed.io/bar/60?title=ongoing)
+* Mobile app ![progress](http://progressed.io/bar/85?title=ongoing)
 * Chinese Readme ![progress](http://progressed.io/bar/0?title=halt)
 * Localization ![progress](http://progressed.io/bar/100?title=done)
 * Amazon S3 backup service ![progress](http://progressed.io/bar/90?title=halt)
-* A timer for backup and email sending task ![progress](http://progressed.io/bar/20?title=ongoing)
+* A timer for backup and email sending task ![progress](http://progressed.io/bar/85?title=ongoing)
 
 

@@ -20,11 +20,11 @@ from flask_testing import TestCase
 from minimock import Mock
 
 try:
-    from server.helpers import get_credential, back_db, render, get_replacable, send_local_mail, gnu_translations
+    from server.helpers import back_db, render, get_replacable, send_local_mail, gnu_translations, credential
     from server.server import db, User, Entries, create_app, app, save_signer, protected_save, send_mail, get_entry
     # from server.ohlife import get_users
 except ImportError:
-    from helpers import get_credential, back_db, render, get_replacable, send_local_mail, gnu_translations
+    from helpers import back_db, render, get_replacable, send_local_mail, gnu_translations, credential
     from server import db, User, Entries, create_app, app, save_signer, protected_save, send_mail, get_entry
     # from ohlife import get_users
 
@@ -387,7 +387,6 @@ class testHelpers(unittest.TestCase):
         """
         test get credential
         """
-        credential = get_credential()
         assert type(credential) == dict
 
     def test_send_email_fucntion(self):

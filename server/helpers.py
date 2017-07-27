@@ -22,15 +22,13 @@ from email.utils import COMMASPACE, formatdate
 
 import boto3
 import jinja2
+from yaml import load
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
 
-# read config
-credential = {}
-with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
-    for line in credentialFile:
-        items = line.split(":")
-        credential[items[0].strip()] = items[1].strip()
+# read config.yaml
+with open(dir_path + "config.yaml", "r", encoding="utf8") as credential_file:
+    credential = load(credential_file.read())
 
 try:
     gnu_translations = gettext.translation(
@@ -123,27 +121,10 @@ def send_local_mail(mail_to, mail_from, subject, text, files, username=None, pas
     smtp.close()
 
 
-def get_credential():
-    """
-    read credential from file
-    :return: return credential dict
-    """
-    credential = {}
-    with open(dir_path + "config.cfg", "r", encoding="utf8") as credentialFile:
-        for line in credentialFile:
-            items = line.split(":")
-            value = items[1].strip()
-            if value == "":
-                value = None
-            credential[items[0].strip()] = value
-    return credential
-
-
 def back_db():
     """
     backup database to Amazon S3
     """
-    credential = get_credential()
     if "aws_access_key_id" in credential and "aws_secret_access_key" in credential:  # pragma: no cover
         my_session = boto3.session.Session(aws_access_key_id=credential["aws_access_key_id"],
                                            aws_secret_access_key=credential["aws_secret_access_key"])

@@ -1,0 +1,14 @@
+---
+# the comment part wont't be loaded
+secret_key: remember to change this! # secret key for Flask
+port: 8090 # Flask port
+address: 127.0.0.1 # deployment address
+locale: zh_Hans_CN # locale settings
+timezone: Asia/Shanghai # timezone for APScheduler
+smtp_server: localhost # SMTP server addressb
+smtp_username: !!null # SMTP username
+smtp_password: !!null # SMTP server password
+admin_name: admin # default admin name
+admin_password: admin # default admin password
+admin_email: admin@admin.com # default admin email
+content_limit: !!int "4194304" # upload file size limit(byte)

@@ -33,6 +33,7 @@ from flask_admin.contrib import sqla
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import TimestampSigner, URLSafeSerializer, BadSignature
 from sqlalchemy import event
@@ -66,6 +67,7 @@ def create_app(database_uri, debug=False):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_EXPIRATION_DELTA'] = timedelta(days=25)
     app.secret_key = credential["secret_key"]
+    app.config["MAX_CONTENT_LENGTH"] = int(credential["content_limit"])
     # add your modules
     db.init_app(app)
     # other setup tasks
@@ -92,6 +94,8 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["30 per minute", "10 per second"]
 )
+# db migrater
+migrate = Migrate(app, db)
 
 # logging
 handler = RotatingFileHandler('foo.log', maxBytes=100000, backupCount=3)
@@ -252,6 +256,7 @@ class Entries(db.Model):
     time = db.Column('time', db.String(24))
     text = db.Column('text', db.String(20))
     user_id = db.Column("user_id", db.String(32), db.ForeignKey("users.user_id"), nullable=False)
+    pic_file_name = db.Column("pic_file_name", db.String(40))
 
     @property
     def serialize(self):
