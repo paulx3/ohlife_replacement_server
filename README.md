@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/paulx3/ohlife_replacement_server/badge.svg?branch=master)](https://coveralls.io/github/paulx3/ohlife_replacement_server?branch=master)
 # Ohlife Replacement Server
 An replacement or alternative to Ohlife
+The fronted is [here](https://github.com/paulx3/ohlife_replacement_front)
 ## Overview
 After [Ohlife](http://ohlife.com/index.php) ,the Chinese alternative [juzishiguang](http://juzitime.com) also shutdown. 
 After lots of searching, I found that those open source replacements are either limited in 
