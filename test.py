@@ -43,7 +43,7 @@ class testCreation(TestCase):
 
         """
         self.app = create_app("sqlite:///", True)
-        self.app.testing = True
+        self.app.config["TESTING"] = True
         self.app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
         return self.app
 
@@ -130,7 +130,7 @@ class testOhlifeSender(testCreation):
         db.session.commit()
         assert user in db.session
         # add test entry
-        entry = Entries(time=None, text="I want to change the world", user_id=user.user_id)
+        entry = Entries(time=None, text="I want to change the world", user_id=user.user_id, file_name="")
         db.session.add(entry)
         db.session.commit()
         assert entry in db.session
@@ -170,7 +170,7 @@ class testEntriesCRUD(testCreation):
         user = self.get_user()
         db.session.add(user)
         text = self.get_entry_text()
-        entry = Entries(time=None, text=text, user_id=user.user_id)
+        entry = Entries(time=None, text=text, user_id=user.user_id, file_name="")
         db.session.add(entry)
         db.session.commit()
         assert entry in db.session
@@ -182,7 +182,7 @@ class testEntriesCRUD(testCreation):
         user = self.get_user()
         db.session.add(user)
         text = self.get_entry_text()
-        entry = Entries(time=None, text=text, user_id=user.user_id)
+        entry = Entries(time=None, text=text, user_id=user.user_id, file_name="")
         db.session.add(entry)
         db.session.commit()
         db.session.delete(entry)

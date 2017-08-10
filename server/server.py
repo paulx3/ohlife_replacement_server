@@ -18,6 +18,7 @@ import traceback
 import uuid
 from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
+from mimetypes import guess_extension
 
 import arrow
 import dateutil.parser
@@ -33,7 +34,6 @@ from flask_admin.contrib import sqla
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import TimestampSigner, URLSafeSerializer, BadSignature
 from sqlalchemy import event
@@ -94,8 +94,6 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["30 per minute", "10 per second"]
 )
-# db migrater
-migrate = Migrate(app, db)
 
 # logging
 handler = RotatingFileHandler('foo.log', maxBytes=100000, backupCount=3)
@@ -267,17 +265,12 @@ class Entries(db.Model):
             "text": self.text
         }
 
-    def __init__(self, text, user_id):
-        self.entry_id = str(uuid.uuid1())
-        self.time = str(arrow.utcnow().format("YYYY-MM-DD"))
-        self.text = text
-        self.user_id = user_id
-
-    def __init__(self, time, text, user_id):
+    def __init__(self, time, text, user_id, file_name):
         self.entry_id = str(uuid.uuid1())
         self.time = time
         self.text = text
         self.user_id = user_id
+        self.pic_file_name = file_name
 
 
 class OhlifeModelView(sqla.ModelView):
@@ -371,26 +364,36 @@ def email_login():
     :return:
     """
     if flask.request.method == 'POST':
-        json_request = flask.request.get_json()
-        if json_request is not None:
-            print(json_request)
-            html = json_request["html"]
-            soup = BeautifulSoup(html, "html.parser")
+        content = flask.request.form.get("html")
+        if content is not None:
+            print(content)
+            soup = BeautifulSoup(content, "html.parser")
+            save_key = soup.find(id="save_key").text.strip()
+            # session_id will expire after 24 hours
+            session_id = save_signer.unsign(save_key, max_age=86400)
+            session_id = bytes.decode(session_id)
+            user = User.query.filter_by(session_id=session_id).first_or_404()
+            # try to save the attachment file
+            limit_counter = 0
             try:
-                save_key = soup.find(id="save_key").text.strip()
-                # session_id will expire after 24 hours
-                session_id = save_signer.unsign(save_key, max_age=86400)
-                session_id = bytes.decode(session_id)
-                user = User.query.filter_by(session_id=session_id).first()
-                if user is not None:
-                    flask.session["entry"] = soup.select('div[style]')[0].text
-                    flask.session["user_id"] = user.user_id
-                    flask_login.login_user(user)
-                    return flask.redirect(flask.url_for('protected_save'))
-                else:
-                    flask.abort(404)
-            except:
-                flask.abort(500)
+                for attachment in flask.request.files:
+                    if limit_counter >= 1:
+                        break
+                    file_name = str(uuid.uuid1()) + guess_extension(flask.request.files[attachment].mimetype)
+                    flask.request.files[attachment].save(file_name)
+                    flask.session["file_name"] = file_name
+                    limit_counter += 1
+            except AttributeError:
+                flask.session["file_name"] = ""
+            flask.session["entry"] = soup.select('div[style]')[0].text
+            flask.session["user_real_id"] = user.user_id
+            # after login flask_login will push user_id into session and this user_id is our session_id
+            # as the get_id method in User model returns user's session id
+            flask_login.login_user(user)
+            return flask.redirect(flask.url_for('protected_save'))
+    # after login flask_login will push user_id into session and this user_id is our session_id
+    # as the get_id method in User model returns user's session id
+    return flask.redirect(flask.url_for('protected_save'))
 
 
 @app.route('/protected')
@@ -401,14 +404,16 @@ def protected_save():
     """
     today = arrow.now().format('YYYY-MM-DD')
     entry = flask.session["entry"]
-    user_id = flask.session["user_id"]
+    user_id = flask.session["user_real_id"]
+    file_name = flask.session["file_name"]
     print(entry)
     print(user_id)
-    db_entry = Entries.query.filter_by(time=today).first()
+    db_entry = Entries.query.filter_by(user_id=user_id, time=today).first()
     if db_entry is None:
-        entry = Entries(today, entry, user_id)
+        entry = Entries(time=today, text=entry, user_id=user_id, file_name=file_name)
         db.session.add(entry)
     else:
+        # only the first photo attachment will be saved
         db_entry.text = db_entry.text + "\n" + entry
     db.session.commit()
     return "Save Success"
