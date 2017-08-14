@@ -3,12 +3,16 @@
         <div style="background:#f9f2e1;height:48px;line-height:48px;color:#f05a28;font-size:18px;">OhLife</div>
         <div style="height:66px;margin-left:60px;line-height:66px;text-align:left">{{name}} {{gettext(" , do you remember ?")}}</div>
         <div style="overflow:hidden;background:#f3f4f4;margin:0 59px; padding:15px 38px;text-align:left;color:#f05a28;">
-            {{data}}<br><span style="float:right;">{{time_ago}}{{gettext("ago")}}</span></div>
-        <div style="margin:20px 60px;text-align:left">{{replacable}}<br>{{gettext("Waiting for your response")}}</div>
+            {{data}}<br>
+            <img style="width:30%" src={{pic_encoded}}
+                 onclick="javascript:if(this.style.width!='90%') {this.style.width='90%'} else {this.style.width='40%'}"/>
+            <span style="float:right;">{{time_ago}}{{gettext("ago")}}</span>
+        </div>
+        <div style="margin:20px 60px;text-align:left">{{replaceable}}<br>{{gettext("Waiting for your response")}}</div>
         <div style="margin:20px 60px;text-align:right">Ohlife</div>
         <div style="background:#f3f4f4;margin:100px 59px 10px;height:2px;"></div>
-        <div style="font-size:12px;line-height:27px;text-align:left;margin:0 60px 30px;color:#7e7b7b;">{{gettext('Reply to this email to write a diary')}}<br>
-        </div>
+        <div style="font-size:12px;line-height:27px;text-align:left;margin:0 60px 30px;color:#7e7b7b;">{{gettext('Reply
+            to this email to write a diary')}}<br></div>
     </div>
     <div id="save_key" style="display:none; display:none !important;">{{save_key}}</div>
 </div>

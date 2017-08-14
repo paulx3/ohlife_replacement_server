@@ -13,6 +13,7 @@
 '''
 
 import atexit
+import base64
 import logging
 import traceback
 import uuid
@@ -525,11 +526,13 @@ def send_schedule_email(user_id):
     :param user_id:user id
     :return:
     """
-    print("temporarily disable")
-    # user = server.User.query.filter_by(user_id=user_id).get_or_404()
-    # user_wrapper = [user]
-    # user_text_list = ohlife.get_entry(user_wrapper)
-    # ohlife.send_mail(user_text_list)
+    # print("temporarily disable")
+    app.app_context().push()
+    user = User.query.filter_by(user_id=user_id).first_or_404()
+    print(user)
+    user_wrapper = [user]
+    user_text_list = get_entry(user_wrapper)
+    send_mail(user_text_list)
 
 
 def send_mail(users_text_list):
@@ -541,24 +544,35 @@ def send_mail(users_text_list):
     # subject = u"今天是 %s - 你今天过得怎么样啊?" % today
     subject = gnu_translations.gettext("Today is %s - How's everything going ?") % today
     for user in users_text_list:
-        time_ago = users_text_list[user][0]
-        data = users_text_list[user][1]
-        replacable = get_replacable(today)
-        context = {
-            "data": data,
-            "time_ago": time_ago,
-            "replacable": replacable,
-            "save_key": bytes.decode(save_signer.sign(user.session_id)),
-            "name": user.username,
-        }
-        html_rendered = render("sender.html", context)
-        print(html_rendered)
-        receiver = user.username + "<" + user.email + ">"
-        sender = "OhLife<" + credential["smtp_server"] + ">"
-        # send_local_mail([receiver], sender, subject, html_rendered, [])
-        send_local_mail(mail_to=[receiver], mail_from=sender, subject=subject,
-                        text=html_rendered, files=[], username=credential["smtp_username"]
-                        , password=credential["smtp_password"], server=credential["smtp_server"])
+        if users_text_list[user] is not None:
+            time_ago = users_text_list[user]["days_ago_str"]
+            data = users_text_list[user]["text"]
+            file_name = users_text_list[user]["file_name"]
+            if file_name != "":
+                file_extension = file_name.split(".")[1].strip()
+                with open(file_name, "rb") as fp:
+                    pic_encoded = '"' + "data:image/" + file_extension + ";base64," + bytes.decode(
+                        base64.b64encode(fp.read())) + '"'
+            else:
+                pic_encoded = '""'
+
+            replaceable = get_replacable(today)
+            context = {
+                "data": data,
+                "time_ago": time_ago,
+                "replaceable": replaceable,
+                "save_key": bytes.decode(save_signer.sign(user.session_id)),
+                "name": user.username,
+                "pic_encoded": pic_encoded
+            }
+            html_rendered = render("sender.html", context)
+            print(html_rendered)
+            receiver = user.username + "<" + user.email + ">"
+            sender = "OhLife<" + credential["smtp_server"] + ">"
+            # send_local_mail([receiver], sender, subject, html_rendered, [])
+            send_local_mail(mail_to=[receiver], mail_from=sender, subject=subject,
+                            text=html_rendered, files=[], username=credential["smtp_username"]
+                            , password=credential["smtp_password"], server=credential["smtp_server"])
 
 
 def get_entry(users):
@@ -598,11 +612,15 @@ def get_entry(users):
                 num_days_ago = gnu_translations.gettext("Today")
                 print(u"%s天" % str(num_days_ago), result.text)
                 # user_text_list[user] = (u"%s天" % str(num_days_ago), result.text)
-                user_text_list[user] = (num_days_ago, result.text)
+                user_text_list[user] = {"days_ago_str": num_days_ago, "text": result.text,
+                                        "file_name": result.pic_file_name}
             else:
                 # print(u"%s 天" % str(num_days_ago), result.text)
                 # user_text_list[user] = (u"%s 天" % str(num_days_ago), result.text)
-                user_text_list[user] = ((str(num_days_ago) + gnu_translations.gettext("days")), result.text)
+                user_text_list[user] = {"days_ago_str": (str(num_days_ago) + gnu_translations.gettext("days")),
+                                        "text": result.text, "file_name": result.pic_file_name}
+        else:
+            user_text_list[user] = {"days_ago_str": "", "text": "", "file_name": ""}
 
     return user_text_list
 
