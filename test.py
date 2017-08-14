@@ -136,9 +136,9 @@ class testOhlifeSender(testCreation):
         assert entry in db.session
         entry_list = get_entry([user])
         print("=============")
-        print(entry_list[user][0])
+        print(entry_list[user]["days_ago_str"])
         print("============")
-        assert entry_list[user][0] == "今天" or "Today"
+        assert entry_list[user]["days_ago_str"] == "今天" or "Today"
 
         # def test_send_mail(self):
         #     """
