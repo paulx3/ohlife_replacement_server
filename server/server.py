@@ -25,6 +25,7 @@ import arrow
 import dateutil.parser
 import flask
 import flask_login
+import werkzeug
 from apscheduler.executors.pool import ProcessPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -100,7 +101,7 @@ limiter = Limiter(
 handler = RotatingFileHandler('foo.log', maxBytes=100000, backupCount=3)
 handler.setLevel(logging.ERROR)
 # sentry error handler
-# client = Client('https://14d2b0b457fa450e958d27d8e179aab3:1ddb71dec9b1442896c7baa26aa4ffc3@sentry.io/187752')
+# client = Client('')
 # handler = SentryHandler(client)
 # handler.setLevel(logging.ERROR)
 app.logger.addHandler(handler)
@@ -118,6 +119,7 @@ job_defaults = {
     'max_instances': 3
 }
 scheduler = BackgroundScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
+# scheduler = AsyncIOScheduler(jobstores=jobstores, executors=executors, job_defaults=job_defaults)
 scheduler.start()
 # i18n
 gnu_translations.install()
@@ -125,11 +127,19 @@ gnu_translations.install()
 
 @app.after_request
 def after_request(response):
+    """
+    request logging formatter
+    :param response:
+    :return:
+    """
     try:
         user_name = current_identity.username
     except AttributeError:
         user_name = "User didn't log in"
-    payload = flask.request.get_json()
+    try:
+        payload = flask.request.get_json()
+    except werkzeug.exceptions.BadRequest:
+        payload = ""
     app.logger.info(
         """
         Time:      {time}
@@ -155,46 +165,49 @@ def after_request(response):
 
 @app.errorhandler(Exception)
 def exceptions(e):
+    """
+    exception logging formatter
+    :param e:
+    :return:
+    """
     try:
         user_name = current_identity.username
     except AttributeError:
         user_name = "User didn't log in"
     try:
         payload = flask.request.get_json()
-    except AttributeError:
-        payload = "No payload"
+    except werkzeug.exceptions.BadRequest:
+        payload = ""
     tb = traceback.format_exc()
-    app.logger.error(
-        """
-        Time:      {time}
-        Request:   {method} {path}
-        IP:        {ip}
-        Agent:     {agent_platform} | {agent_browser} {agent_browser_version}
-        Raw Agent: {agent}
-        Exception: {current_exception}
-        User:      {user_name},
-        Payload:   {payload}
-        """.format(
-            time=arrow.utcnow().format("YYYY-MM-DD:HH:mm:ss ZZ"),
-            method=flask.request.method,
-            path=flask.request.path,
-            ip=flask.request.remote_addr,
-            agent_platform=flask.request.user_agent.platform,
-            agent_browser=flask.request.user_agent.browser,
-            agent_browser_version=flask.request.user_agent.version,
-            current_exception=tb,
-            user_name=user_name,
-            payload=payload,
-            agent=flask.request.user_agent.string))
-
-    return e
-    # try:
-    #     return e.status_code
-    # except ValueError or AttributeError:
-    #     return e
+    error_string = """
+    Time:      {time}
+    Request:   {method} {path}
+    IP:        {ip}
+    Agent:     {agent_platform} | {agent_browser} {agent_browser_version}
+    Raw Agent: {agent}
+    Payload:   {payload}
+    User:      {user_name}
+    Exception: {current_exception}
+    """.format(
+        time=arrow.utcnow().format("YYYY-MM-DD:HH:mm:ss ZZ"),
+        method=flask.request.method,
+        path=flask.request.path,
+        ip=flask.request.remote_addr,
+        agent_platform=flask.request.user_agent.platform,
+        agent_browser=flask.request.user_agent.browser,
+        agent_browser_version=flask.request.user_agent.version,
+        user_name=user_name,
+        payload=payload,
+        current_exception=tb,
+        agent=flask.request.user_agent.string)
+    app.logger.error(error_string)
+    return error_string
 
 
 class User(db.Model, flask_login.UserMixin):
+    """
+    User model
+    """
     __tablename__ = "users"
     user_id = db.Column('user_id', db.String(32), primary_key=True)
     username = db.Column('username', db.String(20), unique=False, index=True)
@@ -250,6 +263,9 @@ class User(db.Model, flask_login.UserMixin):
 
 
 class Entries(db.Model):
+    """
+    diary model
+    """
     __tablename__ = "entries"
     entry_id = db.Column('entry_id', db.String(32), primary_key=True)
     time = db.Column('time', db.String(24))
@@ -260,10 +276,22 @@ class Entries(db.Model):
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
+        if self.pic_file_name != "" and self.pic_file_name is not None:
+            try:
+                file_extension = self.pic_file_name.split(".")[1].strip()
+                with open(self.pic_file_name, "rb") as fp:
+                    pic_encoded = "data:image/" + file_extension + ";base64," + bytes.decode(
+                        base64.b64encode(fp.read()))
+            except FileNotFoundError:
+                pic_encoded = ""
+        else:
+            pic_encoded = ""
+
         return {
             "entry_id": self.entry_id,
             "time": self.time,
-            "text": self.text
+            "text": self.text,
+            "base64_pic": pic_encoded
         }
 
     def __init__(self, time, text, user_id, file_name):
@@ -291,16 +319,29 @@ admin.add_view(OhlifeModelView(Entries, db.session))
 @app.route('/checkauth')
 @jwt_required()
 def protected():
+    """
+    check if user is authenticated
+    :return:
+    """
     if current_identity.authenticate_status is False:
         return "Not Active"
     else:
         return "Authorization Passed"
 
 
-@app.route('/get_all_entries')
+@app.route('/get_all_entries', methods=["POST"])
 @jwt_required()
 def get_entries():
-    user_entries = Entries.query.filter_by(user_id=current_identity.user_id).all()
+    """
+    get entries with paginating
+    :return:
+    """
+    query_request = flask.request.get_json()
+    if query_request is not None and query_request["page"] is not None:
+        page = int(query_request["page"])
+    else:
+        page = 0
+    user_entries = Entries.query.filter_by(user_id=current_identity.user_id).paginate(page=page).items
     json_result = flask.jsonify([entry.serialize for entry in user_entries])
     return json_result
 
@@ -392,8 +433,6 @@ def email_login():
             # as the get_id method in User model returns user's session id
             flask_login.login_user(user)
             return flask.redirect(flask.url_for('protected_save'))
-    # after login flask_login will push user_id into session and this user_id is our session_id
-    # as the get_id method in User model returns user's session id
     return flask.redirect(flask.url_for('protected_save'))
 
 
@@ -433,18 +472,26 @@ def logout():
 @app.route('/entries_delete', methods=['POST'])
 @jwt_required()
 def delete_entry():
+    """
+    delete entry
+    :return:
+    """
     if flask.request.method == 'POST':
         item = flask.request.get_json()
         entry = Entries.query.filter_by(entry_id=item["entry_id"]).first()
         print(entry)
         db.session.delete(entry)
-        # db.session.commit()
+        db.session.commit()
         return "Delete Done"
 
 
 @app.route('/entries_create', methods=['POST'])
 @jwt_required()
 def create_entry():
+    """
+    create entry
+    :return:
+    """
     if flask.request.method == 'POST':
         item = flask.request.get_json()
         diary_time = dateutil.parser.parse(item["time"])
@@ -460,18 +507,6 @@ def create_entry():
             # db.sessoin.commit()
             return flask.jsonify(entry.serialize)
 
-
-# @app.route('/test')
-# @jwt_required()
-# def test():
-#     # setting scheduled task
-#     job = scheduler.add_job(
-#         func=task_test,
-#         trigger=IntervalTrigger(seconds=5),
-#         id=current_identity.user_id,
-#         name=current_identity.username + "'s scheduled task",
-#         replace_existing=True)
-#     return "Scheduled work started."
 
 @app.route('/register', methods=['POST'])
 @limiter.limit("5/day", exempt_when=lambda: current_identity.is_admin)
@@ -526,7 +561,7 @@ def send_schedule_email(user_id):
     :param user_id:user id
     :return:
     """
-    # print("temporarily disable")
+    print("schedule started")
     app.app_context().push()
     user = User.query.filter_by(user_id=user_id).first_or_404()
     print(user)
@@ -566,7 +601,6 @@ def send_mail(users_text_list):
                 "pic_encoded": pic_encoded
             }
             html_rendered = render("sender.html", context)
-            print(html_rendered)
             receiver = user.username + "<" + user.email + ">"
             sender = "OhLife<" + credential["smtp_server"] + ">"
             # send_local_mail([receiver], sender, subject, html_rendered, [])
@@ -637,7 +671,7 @@ def active_user(payload):
     except BadSignature:
         flask.abort(404)
     user = User.query.filter_by(session_id=session_id).first_or_404()
-    if user.authenticate_status is True and False:
+    if user.authenticate_status is True:
         return "Link expired.Don't use it."
     else:
         # setting scheduled task
@@ -658,6 +692,20 @@ def active_user(payload):
         user.authenticate_status = True
         db.session.commit()
         return "User Activated"
+
+
+@app.route("/get_job_schedule", methods=["GET"])
+@jwt_required()
+def get_job():
+    """
+    get user cron job parameter
+    :return:
+    """
+    user_job_id = current_identity.schedule_task_id
+    user_job = scheduler.get_job(job_id=user_job_id, jobstore="default")
+    user_trigger = user_job.trigger
+    options = ['"%s":"%s"' % (f.name, f) for f in user_trigger.fields if not f.is_default]
+    return '{%s}' % (', '.join(options))
 
 
 @login_manager.unauthorized_handler
